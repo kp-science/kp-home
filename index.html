@@ -80,7 +80,9 @@ h1{margin-top:8px;font:700 clamp(40px,5.6vw,72px)/1.3 var(--font)}
 .step-t p{margin-top:6px;color:var(--ink2)}
 .free{display:inline-block;margin-top:10px;padding:3px 11px;border-radius:980px;background:#e8f7ee;color:#0a7d3c;font:600 13px/1.5 var(--font)}
 .clip-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.clip{display:flex;flex-direction:column;width:100%;min-width:0;padding:0;border:0;border-radius:22px;overflow:hidden;background:#fff;color:var(--ink);text-align:left;font:inherit;cursor:pointer;transition:transform .6s var(--ease),box-shadow .6s var(--ease)}
+.clip-row.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.sub{margin:clamp(32px,4vw,52px) 0 14px;font:700 clamp(22px,2.4vw,30px)/1.34 var(--font)}
+.clip{display:flex;flex-direction:column;width:100%;min-width:0;padding:0;border:0;border-radius:22px;overflow:hidden;background:var(--bg);color:var(--ink);text-align:left;font:inherit;cursor:pointer;transition:transform .6s var(--ease),box-shadow .6s var(--ease)}
 .clip:hover{transform:translateY(-4px);box-shadow:0 26px 60px -30px rgba(0,0,0,.45)}
 .clip:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .thumb{position:relative;display:block;width:100%;aspect-ratio:16/9;overflow:hidden;background:#f1e9d8}
@@ -147,7 +149,7 @@ a.topic:hover,button.topic:hover{transform:translateY(-4px);box-shadow:0 26px 60
 .topic h3{font:700 clamp(21px,1.9vw,25px)/1.34 var(--font)}
 .tb p{margin-top:3px;color:var(--ink2);font-size:15.5px;flex:1}
 .tb .go{margin-top:10px;color:var(--link);font:500 15.5px/1.4 var(--font)}
-.topic.all{justify-content:center;background:var(--ink);color:#fff}
+.topic.all{grid-column:1/-1;justify-content:center;background:var(--ink);color:#fff}
 .topic.all .tb{justify-content:center;padding:26px}
 .topic.all p{flex:none;color:#d2d2d7}
 .topic.all .go{color:#6cb4ff}
@@ -198,8 +200,8 @@ a.topic:hover,button.topic:hover{transform:translateY(-4px);box-shadow:0 26px 60
 .foot a:hover{text-decoration:underline}
 .foot-links{display:flex;flex-wrap:wrap;gap:6px 18px}
 .credit{flex-basis:100%;border-top:1px solid var(--line);padding-top:12px}
-@media (max-width:980px){.hero{grid-template-columns:minmax(0,1fr)}.step{grid-template-columns:minmax(0,1fr)}.step-t{position:static}.grid,.courses{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:640px){.wrap,.top-in{padding-inline:16px}.top-in{gap:12px}.nav{gap:12px}.nav .opt{display:none}.grid,.courses,.clip-row,.next-card{grid-template-columns:minmax(0,1fr)}.next-card .cv{min-height:0;aspect-ratio:16/10}.punch .stage{aspect-ratio:4/3}.btn{flex:1 1 auto}}
+@media (max-width:980px){.clip-row.four{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:minmax(0,1fr)}.step{grid-template-columns:minmax(0,1fr)}.step-t{position:static}.grid,.courses{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){.wrap,.top-in{padding-inline:16px}.top-in{gap:12px}.nav{gap:12px}.nav .opt{display:none}.grid,.courses,.clip-row,.clip-row.four,.next-card{grid-template-columns:minmax(0,1fr)}.next-card .cv{min-height:0;aspect-ratio:16/10}.punch .stage{aspect-ratio:4/3}.btn{flex:1 1 auto}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.player .spin::before{animation:none}.reveal{opacity:1;transform:none;transition:none}}
 </style>
 </head>
@@ -220,20 +222,20 @@ a.topic:hover,button.topic:hover{transform:translateY(-4px);box-shadow:0 26px 60
     <article class="lab flat hero-lab" data-scene="mixing"><div class="stage"><canvas aria-label="ภาพจำลอง 3 มิติ: แสงสามสีบนจอ"></canvas><span class="hint">เล่นได้เลย ลากเพื่อหมุน</span><div class="nogl">อุปกรณ์นี้เปิดภาพ 3 มิติไม่ได้ ลองเปิดจากเบราว์เซอร์อื่น</div></div><div class="ctl"><h3>ปิดแสงน้ำเงิน แล้วจอจะเหลือสีอะไร</h3><label for="hr">แสงแดง</label><input id="hr" type="range" min="0" max="1" step=".05" value="1" style="accent-color:#ff3b30"><label for="hg">แสงเขียว</label><input id="hg" type="range" min="0" max="1" step=".05" value="1" style="accent-color:#34c759"><label for="hb">แสงน้ำเงิน</label><input id="hb" type="range" min="0" max="1" step=".05" value="1" style="accent-color:#0071e3"><output></output></div></article>
   </section>
   <section class="sec tint" id="story" aria-labelledby="storyT"><div class="wrap">
-    <div class="sec-h reveal"><div class="eyebrow">เรียนที่นี่เป็นแบบนี้</div><h2 id="storyT">โลกวิ่ง 30 km/s ทำไมเราไม่รู้สึก</h2><p>ลองเดินตามเรื่องนี้ดู จากคำถามเดียว ไปจนเข้าใจความเฉื่อย ใช้เวลาไม่ถึง 15 นาที</p></div>
+    <div class="sec-h reveal"><div class="eyebrow">เรียนที่นี่เป็นแบบนี้</div><h2 id="storyT">เด็กตัวเล็กยกผู้ใหญ่บนไม้กระดกได้ยังไง</h2><p>ลองเดินตามเรื่องนี้ดู จากคำถามเดียว ไปจนเข้าใจโมเมนต์ของแรง</p></div>
     <div class="steps">
-      <div class="step reveal"><div class="step-t"><span class="step-n">1</span><h3>สงสัยก่อน</h3><p>คนเคยเชื่อมาเป็นพันปีว่าโลกไม่ขยับ เพราะอะไร</p><span class="free">ฟรี</span></div><div class="clip-row" data-clips="1242082466,1242082509"></div></div>
-      <div class="step reveal"><div class="step-t"><span class="step-n">2</span><h3>ทาย แล้วลองเอง</h3><p>ต่อยรถสองคันด้วยแรงเท่ากัน แล้วดูว่าธรรมชาติตอบอะไร</p><span class="free">ฟรี</span></div>
-        <article class="lab punch" data-scene="punch"><div class="stage"><canvas aria-label="ภาพจำลอง 3 มิติ: หมัดแรงเท่ากันชนรถสองคัน"></canvas><span class="hint">ลากเพื่อหมุน</span><div class="nogl">อุปกรณ์นี้เปิดภาพ 3 มิติไม่ได้ ลองเปิดจากเบราว์เซอร์อื่น</div></div><div class="ctl"><p class="guess-q">ต่อยด้วยแรงเท่ากัน คันไหนพุ่งเร็วกว่า</p><div class="guesses"><button type="button" class="guess" data-guess="a">รถ A</button><button type="button" class="guess" data-guess="b">รถ B</button><button type="button" class="guess" data-guess="same">เร็วเท่ากัน</button></div><label for="pa">มวลรถ A (กิโลกรัม)</label><input id="pa" type="range" min="1" max="30" step="1" value="5" style="accent-color:#38bdf8"><label for="pb">มวลรถ B (กิโลกรัม)</label><input id="pb" type="range" min="1" max="30" step="1" value="20" style="accent-color:#fb923c"><output></output><p class="verdict" role="status"></p><button type="button" class="again" data-punch>ปล่อยหมัด</button></div></article>
+      <div class="step reveal"><div class="step-t"><span class="step-n">1</span><h3>ทาย แล้วลองเอง</h3><p>ผู้ใหญ่ 60 kg นั่งห่างจุดหมุน 1 เมตร เด็ก 20 kg ต้องนั่งตรงไหน</p><span class="free">ฟรี</span></div>
+        <article class="lab punch" data-scene="seesaw"><div class="stage"><canvas aria-label="ภาพจำลอง 3 มิติ: ไม้กระดกกับผู้ใหญ่และเด็ก"></canvas><span class="hint">ลากเพื่อหมุน</span><div class="nogl">อุปกรณ์นี้เปิดภาพ 3 มิติไม่ได้ ลองเปิดจากเบราว์เซอร์อื่น</div></div><div class="ctl"><p class="guess-q">เด็กต้องนั่งห่างจุดหมุนเท่าไร ไม้จึงสมดุล</p><div class="guesses"><button type="button" class="guess" data-guess="1">1 เมตร</button><button type="button" class="guess" data-guess="2">2 เมตร</button><button type="button" class="guess" data-guess="3">3 เมตร</button></div><label for="sm">มวลเด็ก (กิโลกรัม)</label><input id="sm" type="range" min="10" max="60" step="5" value="20" style="accent-color:#38bdf8"><label for="sd">ระยะเด็กจากจุดหมุน (เมตร)</label><input id="sd" type="range" min=".5" max="3.3" step=".1" value="1.5" style="accent-color:#38bdf8"><output></output><p class="verdict" role="status"></p></div></article>
       </div>
-      <div class="step reveal"><div class="step-t"><span class="step-n">3</span><h3>เข้าใจว่าทำไม</h3><p>สิ่งที่เพิ่งเห็นคือกฎข้อที่ 1 ของนิวตัน และเป็นคำตอบของคำถามแรก</p><span class="free">ฟรี</span></div><div class="clip-row" data-clips="1242082532,1242082656"></div></div>
-      <div class="step reveal"><div class="step-t"><span class="step-n">4</span><h3>เรียนต่อให้ครบ</h3><p>อยากรู้มากกว่านี้ เรียนเป็นบท ๆ ตามจังหวะของตัวเอง</p></div><div><div id="storyCourse"></div><a class="also" href="https://kp-science.github.io/physics-simulations/Demo/mechanics/%E0%B8%81%E0%B8%8E%E0%B8%99%E0%B8%B4%E0%B8%A7%E0%B8%95%E0%B8%B1%E0%B8%99/inertia02_v2_1.html" target="_blank" rel="noopener">หรือเปิดแลป Punch Test ตัวเต็ม พร้อมแบบทดสอบ</a></div></div>
+      <div class="step reveal"><div class="step-t"><span class="step-n">2</span><h3>เข้าใจว่าทำไม</h3><p>สิ่งที่เพิ่งเห็นคือโมเมนต์ของแรง ฟังครูอธิบายในบทเรียนจริงได้เลย</p><span class="free">ฟรี</span></div><div class="next-card"><div class="cv" id="freeCover"></div><div class="bd"><div class="tags"><span>บทเรียนฟรี</span><span>ไม่ถึง 4 นาที</span></div><h4>โมเมนต์ของแรง</h4><p>บทแรกของคอร์สสมดุลต่อการหมุน ทดลองเรียนได้ก่อนตัดสินใจ</p><a class="btn" href="https://course.kpscience.com/#/c/kp-mec-moment/1">ดูบทเรียนนี้ฟรี</a></div></div></div>
+      <div class="step reveal"><div class="step-t"><span class="step-n">3</span><h3>เรียนต่อให้ครบ</h3><p>อยากทำโจทย์ได้ทุกแนว เรียนเป็นบท ๆ ตามจังหวะของตัวเอง</p></div><div><div id="storyCourse"></div><a class="also" href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2001/Mechacnics/3.%20torques_simulation.html" target="_blank" rel="noopener">หรือเปิดแลปทอร์กตัวเต็ม</a></div></div>
     </div>
   </div></section>
   <section class="sec" id="topics" aria-labelledby="topicT"><div class="wrap">
     <div class="sec-h reveal"><div class="eyebrow">ทุกเรื่องเริ่มได้ฟรี</div><h2 id="topicT">อยากรู้เรื่องไหน เริ่มตรงนั้น</h2></div>
     <div class="filter lvs" data-lvs="filter"></div>
     <div class="grid" id="topicGrid"></div>
+    <div id="clips" class="reveal" data-lv="m,h" style="scroll-margin-top:76px"><h3 class="sub">ชุดคลิปฟรี: โลกวิ่ง 30 km/s ทำไมเราไม่รู้สึก</h3><div class="clip-row four" data-clips="1242082466,1242082509,1242082532,1242082656"></div></div>
   </div></section>
   <section class="sec tint" id="courses" aria-labelledby="courseT"><div class="wrap">
     <div class="sec-h reveal"><div class="eyebrow">พร้อมเรียนจริงจัง</div><h2 id="courseT">คอร์สออนไลน์</h2><p>เรียนเมื่อไรก็ได้ ทบทวนบทไหนก็ได้ ตามจังหวะของตัวเอง</p></div>
@@ -260,19 +262,20 @@ const CLIPS = [
 const LEVELS = [['all', 'ทุกระดับ'], ['p', 'ประถม'], ['m', 'ม.ต้น'], ['h', 'ม.ปลาย']], LV = { p: 'ประถม', m: 'ม.ต้น', h: 'ม.ปลาย' };
 /* เพิ่มเรื่องใหม่: เพิ่มหนึ่งก้อนในรายการนี้ · has = สื่อที่เรื่องนี้มี · เอกสารออกแล้วใส่เพิ่มใน has ได้เลย */
 const TOPICS = [
-  { levels: ['m', 'h'], title: 'ความเฉื่อย', q: 'โลกวิ่งเร็วขนาดนี้ ทำไมนกยังจับหนอนได้', has: ['คลิป 4 ตอน', 'ซิม', 'คอร์ส'], href: '#story', go: 'เดินตามเรื่องนี้', img: 'img/clip-1242082656.jpg' },
+  { levels: ['h'], title: 'โมเมนต์ของแรง', q: 'ทำไมเด็กตัวเล็กยกผู้ใหญ่บนไม้กระดกได้', has: ['ซิม', 'บทฟรี', 'คอร์ส'], href: '#story', go: 'เดินตามเรื่องนี้', img: 'https://drive.google.com/thumbnail?id=1JDFYaPEu8bW6kYLVaelVIsFImzC3To4U&sz=w800' },
+  { levels: ['m', 'h'], title: 'ความเฉื่อย', q: 'ต่อยรถสองคันด้วยแรงเท่ากัน คันไหนพุ่งเร็วกว่า', has: ['คลิป 4 ตอน', 'ซิม'], scene: 'punch', extra: ['#clips', 'ดูคลิปเรื่องนี้'], url: LAB + 'Demo/mechanics/%E0%B8%81%E0%B8%8E%E0%B8%99%E0%B8%B4%E0%B8%A7%E0%B8%95%E0%B8%B1%E0%B8%99/inertia02_v2_1.html', guess: true, sliders: [{ label: 'มวลรถ A (กิโลกรัม)', min: 1, max: 30, step: 1, value: 5, color: '#38bdf8' }, { label: 'มวลรถ B (กิโลกรัม)', min: 1, max: 30, step: 1, value: 20, color: '#fb923c' }] },
   { levels: ['p', 'm'], title: 'แสงและสี', q: 'แดงบวกเขียวได้เหลือง แล้วขาวมาจากไหน', has: ['ซิม'], href: '#top', go: 'ลองเล่นด้านบน', rgb: true },
   { levels: ['p', 'm'], title: 'โลกกับดวงอาทิตย์', q: 'ห่างกันแค่ไหน แล้วเรารู้ได้อย่างไร', has: ['คลิป'], clip: '1242082385', go: 'ดูคลิป 1:27 นาที', img: 'img/clip-1242082385.jpg' },
   { levels: ['h'], title: 'ใยแสง', q: 'ทำไมแสงไม่รั่วออกจากเส้นใย ลองหาจุดที่เริ่มรั่ว', has: ['ซิม'], scene: 'fibre', url: LAB + 'Virtual%20Physics%20Lab%2002/117.%20optical-fibre.html', sliders: [{ label: 'มุมยิงเลเซอร์ θ', min: 0, max: 45, step: .5, value: 15 }, { label: 'ดัชนีหักเหของเปลือก n₂ (แกน n₁ = 1.50)', min: 1, max: 1.55, step: .01, value: 1.46 }] },
   { levels: ['m', 'h'], title: 'แรงบนพื้นเอียง', q: 'ชันขึ้นสองเท่า ต้องดึงแรงขึ้นสองเท่าไหม ลอง 30° แล้ว 60°', has: ['ซิม'], scene: 'incline', url: LAB + 'Virtual%20Physics%20Lab%2001/Mechacnics/5.%20incline_forces.html', sliders: [{ label: 'มุมพื้นเอียง θ', min: 0, max: 80, step: .5, value: 30 }, { label: 'น้ำหนักรถ W (นิวตัน)', min: 1, max: 25, step: .1, value: 12.7 }] },
 ];
-const STORY_COURSE = 'ijso2';
+const STORY_COURSE = 'kp-mec-moment';
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const clipBtn = c => `<button type="button" class="clip" data-clip="${c.id}" aria-label="เล่นคลิป ${c.title}"><span class="thumb"><img src="img/clip-${c.id}.jpg" alt="" loading="lazy"><span class="play-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3l15 9-15 9z"/></svg></span></span><span class="meta"><b>${c.title}</b><small>${c.ep} · ${c.len} นาที</small></span></button>`;
 document.querySelectorAll('[data-clips]').forEach(el => { el.innerHTML = el.dataset.clips.split(',').map(id => clipBtn(CLIPS.find(c => c.id === id))).join(''); });
 const tags = t => `<div class="tags">${t.levels.map(l => `<span>${LV[l]}</span>`).join('')}${t.has.map(h => `<span>${h}</span>`).join('')}</div>`;
 document.getElementById('topicGrid').innerHTML = TOPICS.map((t, i) => {
-  if (t.scene) return `<article class="topic lab reveal" data-lv="${t.levels}" data-scene="${t.scene}"><div class="stage" style="aspect-ratio:16/10"><canvas aria-label="ภาพจำลอง 3 มิติ: ${t.title}"></canvas><span class="hint">ลากเพื่อหมุน</span><div class="nogl">อุปกรณ์นี้เปิดภาพ 3 มิติไม่ได้ ลองเปิดจากเบราว์เซอร์อื่น</div></div><div class="ctl">${tags(t)}<h3>${t.title}</h3><p class="q">${t.q}</p>${t.sliders.map((r, j) => `<label for="t${i}${j}">${r.label}</label><input id="t${i}${j}" type="range" min="${r.min}" max="${r.max}" step="${r.step}" value="${r.value}">`).join('')}<output></output><a class="full" href="${t.url}" target="_blank" rel="noopener">เปิดแลปเต็ม</a></div></article>`;
+  if (t.scene) return `<article class="topic lab${t.guess ? ' punch' : ''} reveal" data-lv="${t.levels}" data-scene="${t.scene}"><div class="stage" style="aspect-ratio:16/10"><canvas aria-label="ภาพจำลอง 3 มิติ: ${t.title}"></canvas><span class="hint">ลากเพื่อหมุน</span><div class="nogl">อุปกรณ์นี้เปิดภาพ 3 มิติไม่ได้ ลองเปิดจากเบราว์เซอร์อื่น</div></div><div class="ctl">${tags(t)}<h3>${t.title}</h3><p class="q">${t.q}</p>${t.guess ? '<div class="guesses"><button type="button" class="guess" data-guess="a">รถ A</button><button type="button" class="guess" data-guess="b">รถ B</button><button type="button" class="guess" data-guess="same">เร็วเท่ากัน</button></div>' : ''}${t.sliders.map((r, j) => `<label for="t${i}${j}">${r.label}</label><input id="t${i}${j}" type="range" min="${r.min}" max="${r.max}" step="${r.step}" value="${r.value}"${r.color ? ` style="accent-color:${r.color}"` : ''}>`).join('')}<output></output>${t.guess ? '<p class="verdict" role="status"></p><button type="button" class="again" data-punch>ปล่อยหมัด</button>' : ''}${t.extra ? `<a class="full" href="${t.extra[0]}">${t.extra[1]}</a>` : ''}<a class="full" href="${t.url}" target="_blank" rel="noopener">เปิดแลปเต็ม</a></div></article>`;
   const media = t.rgb ? '<div class="tm rgb"><i></i><i></i><i></i></div>' : `<div class="tm"><img src="${t.img}" alt="" loading="lazy"></div>`;
   const inner = `${media}<div class="tb">${tags(t)}<h3>${t.title}</h3><p>${t.q}</p><span class="go">${t.go}</span></div>`;
   return t.clip ? `<button type="button" class="topic reveal" style="border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer" data-lv="${t.levels}" data-clip="${t.clip}">${inner}</button>` : `<a class="topic reveal" href="${t.href}" data-lv="${t.levels}">${inner}</a>`;
@@ -295,7 +298,8 @@ function drawCourses() {
 }
 function drawStoryCourse() {
   const el = document.getElementById('storyCourse'), c = COURSES && COURSES.find(x => x.id === STORY_COURSE);
-  el.innerHTML = c ? `<div class="next-card"><div class="cv"${coverAttr(c)}></div><div class="bd"><div class="tags"><span>${esc(c.level)}</span>${c.lessons ? `<span>${c.lessons} บท</span>` : ''}</div><h4>${esc(c.title)}</h4><p>${esc(c.summary)}</p><p style="color:var(--ink);font-weight:700;margin-top:8px">${priceOf(c)}</p><a class="btn" href="${urlOf(c)}">ดูคอร์สนี้</a></div></div>` : `<a class="btn" href="#courses">ดูคอร์สทั้งหมด</a>`;
+  const free = document.getElementById('freeCover'); if (free && c && c.cover) free.style.backgroundImage = `url('${c.cover}')`;
+  el.innerHTML = c ? `<div class="next-card"><div class="cv"${coverAttr(c)}></div><div class="bd"><div class="tags"><span>${esc(c.level)}</span>${c.lessons ? `<span>${c.lessons} บท</span>` : ''}</div><h4>${esc(c.title)}</h4><p>${esc(c.summary)}</p><p style="color:var(--ink);font-weight:700;margin-top:8px">${priceOf(c)}</p><a class="btn" href="${urlOf(c)}">สมัครคอร์สนี้</a></div></div>` : `<a class="btn" href="#courses">ดูคอร์สทั้งหมด</a>`;
 }
 fetch(`https://firestore.googleapis.com/v1/projects/kp-course/databases/(default)/documents:runQuery?key=${FB_KEY}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ structuredQuery: { select: { fields: ['id', 'title', 'level', 'price', 'cover', 'summary', 'lessonCount', 'order'].map(fieldPath => ({ fieldPath })) }, from: [{ collectionId: 'courses' }], where: { fieldFilter: { field: { fieldPath: 'published' }, op: 'EQUAL', value: { booleanValue: true } } }, limit: 30 } }) })
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
@@ -308,7 +312,7 @@ drawStoryCourse();
 function setLevel(l) {
   LEVEL = l;
   document.querySelectorAll('.lv').forEach(b => b.classList.toggle('on', b.dataset.lv === l));
-  document.querySelectorAll('#topicGrid [data-lv]').forEach(t => { t.hidden = l !== 'all' && !t.dataset.lv.split(',').includes(l); });
+  document.querySelectorAll('#topics [data-lv]:not(.lv)').forEach(t => { t.hidden = l !== 'all' && !t.dataset.lv.split(',').includes(l); });
   drawCourses();
 }
 document.querySelectorAll('[data-lvs]').forEach(el => { const hero = el.dataset.lvs === 'hero'; el.innerHTML = LEVELS.filter(x => !hero || x[0] !== 'all').map(([k, n]) => `<button type="button" class="lv" data-lv="${k}">${n}</button>`).join(''); });

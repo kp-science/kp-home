@@ -55,6 +55,11 @@
   const metal = color => new THREE.MeshStandardMaterial({ color: color == null ? 0xd8dde4 : color, metalness: .9, roughness: .25 });
   const UP = () => V3(0, 1, 0);
   function pose(m, p, q, r) { const d = q.clone().sub(p), len = d.length(); m.position.copy(p).addScaledVector(d, .5); m.quaternion.setFromUnitVectors(UP(), d.normalize()); m.scale.set(r, len, r); }
+  const forceArrow = (pivot, col) => {
+    const g = new THREE.Group(), m = new THREE.MeshBasicMaterial({ color: col, depthTest: false, transparent: true }), sh = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, 1, 12), m), he = new THREE.Mesh(new THREE.ConeGeometry(.085, 1, 18), m);
+    sh.renderOrder = he.renderOrder = 20; g.add(sh, he); pivot.add(g); g.set = (o, d, n) => { g.visible = n > .05; if (!g.visible) return; const hh = Math.min(.2, n * .45); g.position.copy(o); g.quaternion.setFromUnitVectors(UP(), d); sh.scale.y = n - hh; sh.position.y = (n - hh) / 2; he.scale.y = hh; he.position.y = n - hh / 2; };
+    return g;
+  };
   function woodTexture() {
     const c = document.createElement('canvas'); c.width = 512; c.height = 64; const g = c.getContext('2d');
     g.fillStyle = '#c99a63'; g.fillRect(0, 0, 512, 64); let s = 7; const R = () => (s = (s * 16807) % 2147483647) / 2147483647;
@@ -193,11 +198,7 @@
     // ขาตั้งด้านหลัง: แคลมป์เลื่อนตามความสูงของกระดาน
     const RX = PX + .62, rod = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, 3.6, 14), metal()); rod.position.set(RX, PY + 1.72, -.72); pivot.add(rod);
     const clamp = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, .8, 12), metal()); clamp.rotation.x = Math.PI / 2; pivot.add(clamp);
-    const arrow = col => {
-      const g = new THREE.Group(), m = new THREE.MeshBasicMaterial({ color: col, depthTest: false, transparent: true }), sh = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, 1, 12), m), he = new THREE.Mesh(new THREE.ConeGeometry(.085, 1, 18), m);
-      sh.renderOrder = he.renderOrder = 20; g.add(sh, he); pivot.add(g); g.set = (o, d, n) => { g.visible = n > .05; if (!g.visible) return; const hh = Math.min(.2, n * .45); g.position.copy(o); g.quaternion.setFromUnitVectors(UP(), d); sh.scale.y = n - hh; sh.position.y = (n - hh) / 2; he.scale.y = hh; he.position.y = n - hh / 2; };
-      return g;
-    };
+    const arrow = col => forceArrow(pivot, col);
     const AW = arrow(0xf87171), AN = arrow(0xfacc15), AS = arrow(0xfb923c), AC = arrow(0x818cf8);
     const LW = textSprite('#fca5a5', .3), LN = textSprite('#fde047', .3), LS = textSprite('#fdba74', .3), LC = textSprite('#c7d2fe', .3), LA = textSprite('#ffffff', .3);
     LW.text('W'); LN.text('N'); LS.text('W sinθ'); LC.text('W cosθ'); pivot.add(LW, LN, LS, LC, LA);
@@ -272,7 +273,39 @@
     };
   }
 
-  const SCENES = { fibre, mixing, incline, punch }, cards = document.querySelectorAll('.lab');
+  /* ไม้กระดก (โมเมนต์ของแรง): ผู้ใหญ่ 60 kg ห่างจุดหมุน 1 m · M = mgd สองข้างเท่ากันจึงสมดุล ไม่เท่ากันไม้จะเอียงจนปลายแตะพื้น */
+  function seesaw({ scene, pivot, view, card }) {
+    view.dist = 9.2; view.span = 8.2; view.pitch = .14; view.yaw = .26; lights(scene);
+    const G = 9.8, M1 = 60, D1 = 1, Y0 = -.42, MAX = .27, K = .017;
+    const ground = new THREE.Mesh(new THREE.BoxGeometry(8.2, .08, 2.4), new THREE.MeshStandardMaterial({ color: 0x4a3a2c, roughness: .9 })); ground.position.y = -1.42; pivot.add(ground);
+    const base = new THREE.Mesh(new THREE.ConeGeometry(.46, .96, 4), enamel(0x9ca3af, .45)); base.rotation.y = Math.PI / 4; base.position.y = -.9; pivot.add(base);
+    const plank = new THREE.Group(); plank.position.y = Y0; pivot.add(plank);
+    const wood = new THREE.Mesh(new THREE.BoxGeometry(7, .09, .74), new THREE.MeshPhysicalMaterial({ map: woodTexture(), roughness: .55, clearcoat: .45, clearcoatRoughness: .35 })); plank.add(wood);
+    [1, 2, 3].forEach(d => [-1, 1].forEach(sd => { const t = new THREE.Mesh(new THREE.BoxGeometry(.025, .094, .76), new THREE.MeshStandardMaterial({ color: 0x4b2e12 })); t.position.x = d * sd; plank.add(t); const n = textSprite('#ffffff', .22); n.text(`${d} m`); n.position.set(d * sd, -.2, .42); plank.add(n); }));
+    const person = col => { const g = new THREE.Group(), m = enamel(col, .4), body = new THREE.Mesh(new THREE.CylinderGeometry(.17, .22, .62, 24), m), head = new THREE.Mesh(new THREE.SphereGeometry(.17, 24, 16), new THREE.MeshStandardMaterial({ color: 0xf2c9a1, roughness: .6 })); body.position.y = .31; head.position.y = .8; g.add(body, head); plank.add(g); return g; };
+    const adult = person(0xfb923c), kid = person(0x38bdf8);
+    adult.position.set(-D1, .045, 0); adult.scale.setScalar(1.15);
+    const tagA = textSprite('#fdba74', .3), tagK = textSprite('#7dd3fc', .3); tagA.text(`${M1} kg`); plank.add(tagA, tagK); tagA.position.set(-D1, 1.32, 0);
+    const AA = forceArrow(pivot, 0xfb923c), AK = forceArrow(pivot, 0x38bdf8);
+    const inputs = card.querySelectorAll('input'), out = card.querySelector('output'), verdict = card.querySelector('.verdict'), guesses = [...card.querySelectorAll('[data-guess]')];
+    let tilt = 0, target = 0, m2 = 20, d2 = 1.5, say = '';
+    const place = () => { plank.rotation.z = tilt; const c = Math.cos(tilt), s = Math.sin(tilt), at = x => V3(x * c, Y0 + x * s + .3); AA.set(at(-D1), V3(0, -1), M1 * K); AK.set(at(d2), V3(0, -1), m2 * K); };
+    guesses.forEach(b => b.addEventListener('click', () => {
+      const g = Number(b.dataset.guess); say = g === 3 ? 'ทายถูก เด็กหนักเป็น 1 ใน 3 ของผู้ใหญ่ จึงต้องนั่งไกลกว่า 3 เท่า โมเมนต์สองข้างจึงเท่ากัน' : 'ยังไม่สมดุล ดูโมเมนต์สองข้างแล้วลองเลื่อนระยะเอง';
+      inputs[0].value = 20; inputs[1].value = g; const keep = say; inputs[1].dispatchEvent(new Event('input', { bubbles: true })); guesses.forEach(x => x.classList.toggle('picked', x === b)); verdict.textContent = keep;
+    }));
+    return {
+      set(m, d) {
+        m2 = m; d2 = d; const t1 = M1 * G * D1, t2 = m * G * d, bal = Math.abs(t1 - t2) < t1 * .01, s = .72 + .43 * Math.cbrt(m / 60);
+        kid.position.set(d, .045, 0); kid.scale.setScalar(s); tagK.text(`${fmt(m)} kg`); tagK.position.set(d, .045 + .98 * s + .22, 0);
+        target = bal ? 0 : t1 > t2 ? MAX : -MAX; guesses.forEach(x => x.classList.remove('picked')); verdict.textContent = '';
+        out.textContent = `โมเมนต์ข้างผู้ใหญ่ ${fmt(t1)} N·m · ข้างเด็ก ${fmt(t2)} N·m · ${bal ? 'สมดุล' : t1 > t2 ? 'ไม้เอียงลงข้างผู้ใหญ่' : 'ไม้เอียงลงข้างเด็ก'}`;
+      },
+      step(dt) { tilt = dt ? tilt + (target - tilt) * Math.min(1, dt * 3.2) : target; place(); },
+    };
+  }
+
+  const SCENES = { fibre, mixing, incline, punch, seesaw }, cards = document.querySelectorAll('.lab');
   if (!cards.length) return;
   const fail = () => cards.forEach(c => c.querySelector('.stage').classList.add('fail'));
   const start = c => { if (c.dataset.up) return; c.dataset.up = 1; try { mount(c, SCENES[c.dataset.scene]); } catch (e) { console.warn('3D', e); c.querySelector('.stage').classList.add('fail'); } };
