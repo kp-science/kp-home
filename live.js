@@ -1,5 +1,5 @@
-/* การ์ด 3D เล่นได้บนหน้าแรก: ย่อจากแลป KP Science จริง (117 ใยแสง · 162 ผสมแสงสี · 5 พื้นเอียง) ใช้ three.js r128 เหมือนแลป
-   โหลด three.js เมื่อเลื่อนมาใกล้ · วาดเฉพาะการ์ดที่เห็น · ลากเพื่อหมุน (ปัดขึ้นลงบนมือถือยังเลื่อนหน้าได้) */
+/* การ์ด 3D เล่นได้บนหน้าแรก: ย่อจากแลป KP Science จริง (117 ใยแสง · 162 ผสมแสงสี · 5 พื้นเอียง · Punch Test ความเฉื่อย) ใช้ three.js r128 เหมือนแลป
+   โหลด three.js และสร้างฉากเมื่อเลื่อนมาใกล้ · วาดเฉพาะการ์ดที่เห็น · ลากเพื่อหมุน (ปัดขึ้นลงบนมือถือยังเลื่อนหน้าได้) */
 (function () {
   const THREE_URL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
   const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -17,7 +17,8 @@
     scene.add(pivot);
     const view = { yaw: .4, pitch: .2, dist: 10, sway: 0 };
     const api = build({ scene, pivot, view, card });
-    const place = () => { pivot.rotation.set(view.pitch, view.yaw + view.sway, 0); camera.position.set(0, 0, view.dist); camera.lookAt(0, 0, 0); };
+    // view.span = ความกว้างฉากที่ต้องเห็นครบ จอแคบจึงถอยกล้องเอง
+    const place = () => { pivot.rotation.set(view.pitch, view.yaw + view.sway, 0); camera.position.set(0, 0, Math.max(view.dist, (view.span || 0) / (2 * Math.tan(19 * D2R) * camera.aspect))); camera.lookAt(0, 0, 0); };
     const size = () => { const w = box.clientWidth, h = box.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); draw(0); };
     const draw = dt => { place(); api.step(dt); renderer.render(scene, camera); };
     new ResizeObserver(size).observe(box);
@@ -221,13 +222,62 @@
     };
   }
 
-  const SCENES = { fibre, mixing, incline }, cards = document.querySelectorAll('.lab');
+  /* ความเฉื่อย (Punch Test): แรงดลเท่ากัน J = 100 N·s → v = J/m · ไม่มีแรงเสียดทาน รถจึงวิ่งต่อด้วยความเร็วคงที่ */
+  function punch({ scene, pivot, view, card }) {
+    view.dist = 8.4; view.span = 8; view.pitch = .3; view.yaw = .24; lights(scene);
+    const J = 100, K = .13, X0 = -2.35, XE = 3.45, Z = [.62, -.62], COL = [0x38bdf8, 0xfb923c], TXT = ['#7dd3fc', '#fdba74'];
+    const bed = new THREE.Mesh(new THREE.BoxGeometry(7.8, .08, 2.5), new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: .8 })); bed.position.set(.2, -.52, 0); pivot.add(bed);
+    const lanes = Z.map((z, i) => {
+      [-.17, .17].forEach(o => { const r = new THREE.Mesh(new THREE.BoxGeometry(7.4, .03, .03), metal()); r.position.set(.2, -.46, z + o); pivot.add(r); });
+      const stop = new THREE.Mesh(new THREE.BoxGeometry(.08, .34, .6), enamel(0x9ca3af)); stop.position.set(3.95, -.3, z); pivot.add(stop);
+      const cart = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshPhysicalMaterial({ color: COL[i], metalness: .15, roughness: .32, clearcoat: .7 })); pivot.add(cart);
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(.045, .045, 1, 14), metal()); arm.rotation.z = Math.PI / 2; pivot.add(arm);
+      const glove = new THREE.Mesh(new THREE.SphereGeometry(.2, 24, 16), enamel(0xdc2626, .35)); pivot.add(glove);
+      const tag = textSprite(TXT[i], .3); pivot.add(tag);
+      return { z, cart, arm, glove, tag, m: 5, half: .3, x: X0, v: 0 };
+    });
+    const out = card.querySelector('output'), verdict = card.querySelector('.verdict'), guesses = [...card.querySelectorAll('[data-guess]')], again = card.querySelector('[data-punch]');
+    let t = -1, moving = false;
+    const GLOVE_HOME = -3.25;
+    const poseGlove = (l, x) => { l.glove.position.set(x, -.12, l.z); const back = -3.9; l.arm.position.set((back + x) / 2, -.12, l.z); l.arm.scale.y = Math.max(.01, x - back); };
+    const poseCart = l => { l.cart.position.set(l.x, -.44 + l.half, l.z); l.tag.position.set(l.x, -.44 + l.half * 2 + .24, l.z); };
+    const clearGuess = () => { guesses.forEach(b => b.classList.remove('picked')); if (verdict) verdict.textContent = ''; };
+    const reset = () => { t = -1; moving = false; lanes.forEach(l => { l.x = X0; l.v = 0; poseCart(l); poseGlove(l, GLOVE_HOME); }); };
+    const readout = () => { const [a, b] = lanes, va = J / a.m, vb = J / b.m, r = Math.max(va, vb) / Math.min(va, vb); out.textContent = `A ได้ ${fmt(va, 1)} m/s · B ได้ ${fmt(vb, 1)} m/s${a.m === b.m ? ' เร็วเท่ากัน' : ` · ${va > vb ? 'A' : 'B'} เร็วกว่า ${fmt(r, 1)} เท่า`}`; };
+    const fire = () => { reset(); t = 0; };
+    guesses.forEach(b => b.addEventListener('click', () => {
+      clearGuess(); b.classList.add('picked'); const [A, B] = lanes, ans = A.m === B.m ? 'same' : A.m < B.m ? 'a' : 'b', ok = b.dataset.guess === ans;
+      verdict.textContent = ok ? 'ทายถูก มวลน้อยเปลี่ยนความเร็วได้ง่ายกว่า นี่คือความเฉื่อย' : 'ยังไม่ใช่ ลองดูว่าคันไหนเปลี่ยนความเร็วได้ง่ายกว่า มวลยิ่งมากยิ่งเฉื่อย';
+      fire(); readout();
+    }));
+    if (again) again.addEventListener('click', () => { fire(); readout(); });
+    reset();
+    return {
+      set(ma, mb) {
+        [ma, mb].forEach((m, i) => { const l = lanes[i], side = .36 + .3 * Math.cbrt(m / 30); l.m = m; l.half = side / 2; l.cart.scale.set(side, side, side * 1.1); l.tag.text(`${i ? 'B' : 'A'} ${fmt(m)} kg`); });
+        clearGuess(); reset(); out.textContent = 'แรงดลเท่ากันทั้งสองคัน กดทายเพื่อปล่อยหมัด';
+      },
+      step(dt) {
+        if (t < 0) return; t += dt;
+        const HIT = .16;
+        lanes.forEach(l => {
+          const contact = X0 - l.half - .2;
+          if (t < HIT) poseGlove(l, GLOVE_HOME + (contact - GLOVE_HOME) * (t / HIT));
+          else { poseGlove(l, Math.max(GLOVE_HOME, contact - (t - HIT) * 3)); if (moving) { l.x += (J / l.m) * K * dt * .55; poseCart(l); } }
+        });
+        if (!moving && t >= HIT) moving = true;
+        // หยุดเมื่อคันเร็วถึงปลายราง แล้วค้างภาพไว้ให้เทียบระยะ
+        if (moving && lanes.some(l => l.x + l.half >= XE + .42)) { moving = false; t = -1; }
+      },
+    };
+  }
+
+  const SCENES = { fibre, mixing, incline, punch }, cards = document.querySelectorAll('.lab');
   if (!cards.length) return;
   const fail = () => cards.forEach(c => c.querySelector('.stage').classList.add('fail'));
-  const start = () => {
-    cards.forEach(c => { try { mount(c, SCENES[c.dataset.scene]); } catch (e) { console.warn('3D', e); c.querySelector('.stage').classList.add('fail'); } });
-  };
-  let begun = false;
-  const go = () => { if (begun) return; begun = true; const s = document.createElement('script'); s.src = THREE_URL; s.onload = start; s.onerror = fail; document.head.appendChild(s); };
-  if ('IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); go(); } }, { rootMargin: '400px 0px' }); io.observe(document.getElementById('play')); } else go();
+  const start = c => { if (c.dataset.up) return; c.dataset.up = 1; try { mount(c, SCENES[c.dataset.scene]); } catch (e) { console.warn('3D', e); c.querySelector('.stage').classList.add('fail'); } };
+  // โหลด three.js ครั้งเดียว แล้วสร้างฉากทีละใบเมื่อใกล้เห็น
+  let state = 0; const wait = [];
+  const need = c => { if (state === 2) return start(c); wait.push(c); if (state) return; state = 1; const s = document.createElement('script'); s.src = THREE_URL; s.onload = () => { state = 2; wait.forEach(start); }; s.onerror = fail; document.head.appendChild(s); };
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); need(e.target); } }), { rootMargin: '400px 0px' }); cards.forEach(c => io.observe(c)); } else cards.forEach(need);
 })();
