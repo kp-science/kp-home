@@ -51,22 +51,36 @@ a{color:inherit;text-decoration:none}
 .btn.ghost:hover{background:rgba(0,102,204,.06)}
 .btn:focus-visible,.lv:focus-visible,.guess:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .eyebrow{font:600 clamp(15px,1.4vw,18px)/1.4 var(--font);color:var(--eyebrow)}
-.hero{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);align-items:center;gap:clamp(24px,4vw,56px);padding-block:clamp(36px,5vw,68px) clamp(48px,6vw,84px)}
+.hero{max-width:900px;padding-block:clamp(44px,6vw,84px) clamp(32px,4vw,52px);text-align:center}
 h1{margin-top:8px;font:700 clamp(40px,5.6vw,72px)/1.3 var(--font)}
-.deck{max-width:560px;margin-top:14px;color:var(--ink2);font-size:clamp(18px,1.8vw,22px);line-height:1.5}
+.deck{max-width:640px;margin:14px auto 0;color:var(--ink2);font-size:clamp(18px,1.8vw,22px);line-height:1.5}
 .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
 .who{margin-top:30px}
 .who b{display:block;font:600 15px/1.4 var(--font);color:var(--ink2);margin-bottom:9px}
 .lvs{display:flex;flex-wrap:wrap;gap:8px}
+.hero .lvs{justify-content:center}
+.hero .deck{text-wrap:balance}
+br.m{display:none}
 .lv{padding:9px 18px;border:0;border-radius:980px;background:var(--bg);color:var(--ink);font:500 15.5px/1.3 var(--font);cursor:pointer;transition:background .2s,color .2s}
 .lv:hover{background:#e8e8ed}
 .lv.on{background:var(--ink);color:#fff}
-.hero-lab{box-shadow:0 40px 90px -46px rgba(0,0,0,.5)}
-.hero-lab .stage{aspect-ratio:5/4}
-.hero-lab .ctl{padding:14px 20px 18px}
-.hero-lab .ctl h3{font-size:clamp(19px,1.7vw,22px)}
-.hero-lab input[type=range]{height:24px;margin:0 0 2px}
-.hero-lab .ctl output{min-height:2.9em}
+.doors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding-bottom:clamp(56px,7vw,100px)}
+.door{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-width:0;min-height:clamp(300px,30vw,400px);padding:clamp(22px,3vw,36px);overflow:hidden;border-radius:24px;color:#fff;isolation:isolate;transition:transform .6s var(--ease),box-shadow .6s var(--ease)}
+.door:hover{transform:translateY(-4px);box-shadow:0 26px 60px -30px rgba(0,0,0,.55)}
+.door:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.door.c{background:linear-gradient(150deg,#0a84ff,#0058b0)}
+.door.s{background:radial-gradient(120% 110% at 78% 8%,#1f3263,#03050c 72%)}
+.door small{font:600 clamp(15px,1.3vw,17px)/1.4 var(--font);opacity:.86}
+.door h2{margin-top:2px;font:700 clamp(32px,4vw,52px)/1.3 var(--font)}
+.door p{max-width:440px;margin-top:4px;font-size:clamp(16px,1.5vw,19px);opacity:.86}
+.door .go{align-self:flex-start;margin-top:16px;padding:12px 24px;border-radius:980px;background:#fff;color:var(--ink);font:600 clamp(16px,1.4vw,18px)/1.3 var(--font)}
+.door-art{position:absolute;top:clamp(20px,3vw,34px);right:clamp(20px,3vw,34px);z-index:-1;width:clamp(104px,14vw,180px);aspect-ratio:1}
+.door-art.play{display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.16)}
+.door-art.play svg{width:40%;height:40%;margin-left:6%;fill:#fff}
+.door-art.rgb i{position:absolute;width:62%;aspect-ratio:1;border-radius:50%;mix-blend-mode:screen}
+.door-art.rgb i:nth-child(1){left:0;bottom:0;background:#ff0000}
+.door-art.rgb i:nth-child(2){right:0;bottom:0;background:#00ff00}
+.door-art.rgb i:nth-child(3){left:19%;top:0;background:#0000ff}
 .sec{padding-block:clamp(56px,7vw,100px)}
 .sec.tint{background:var(--bg)}
 .sec-h{margin-bottom:clamp(22px,3vw,36px)}
@@ -109,7 +123,6 @@ h1{margin-top:8px;font:700 clamp(40px,5.6vw,72px)/1.3 var(--font)}
 .ctl label{display:block;font:500 13.5px/1.4 var(--font);color:var(--ink2)}
 .ctl input[type=range]{display:block;width:100%;margin:2px 0 6px;accent-color:var(--blue);height:28px}
 .ctl output{display:block;min-height:4.4em;margin-top:4px;font:600 15px/1.45 var(--font)}
-.ctl .sw{display:inline-block;width:14px;height:14px;margin-right:7px;border-radius:50%;vertical-align:-2px;box-shadow:0 0 0 1px rgba(0,0,0,.18)}
 .ctl .full{align-self:flex-start;margin-top:8px;color:#0066cc;font-size:15px}
 .ctl .full:hover{text-decoration:underline}
 .punch .stage{aspect-ratio:16/9}
@@ -200,8 +213,8 @@ a.topic:hover,button.topic:hover{transform:translateY(-4px);box-shadow:0 26px 60
 .foot a:hover{text-decoration:underline}
 .foot-links{display:flex;flex-wrap:wrap;gap:6px 18px}
 .credit{flex-basis:100%;border-top:1px solid var(--line);padding-top:12px}
-@media (max-width:980px){.clip-row.four{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:minmax(0,1fr)}.step{grid-template-columns:minmax(0,1fr)}.step-t{position:static}.grid,.courses{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:640px){.wrap,.top-in{padding-inline:16px}.top-in{gap:12px}.nav{gap:12px}.nav .opt{display:none}.grid,.courses,.clip-row,.clip-row.four,.next-card{grid-template-columns:minmax(0,1fr)}.next-card .cv{min-height:0;aspect-ratio:16/10}.punch .stage{aspect-ratio:4/3}.btn{flex:1 1 auto}}
+@media (max-width:980px){.clip-row.four{grid-template-columns:repeat(2,minmax(0,1fr))}.step{grid-template-columns:minmax(0,1fr)}.step-t{position:static}.grid,.courses{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){br.m{display:inline}.doors{grid-template-columns:minmax(0,1fr)}.door{min-height:290px}.wrap,.top-in{padding-inline:16px}.top-in{gap:12px}.nav{gap:12px}.nav .opt{display:none}.grid,.courses,.clip-row,.clip-row.four,.next-card{grid-template-columns:minmax(0,1fr)}.next-card .cv{min-height:0;aspect-ratio:16/10}.punch .stage{aspect-ratio:4/3}.btn{flex:1 1 auto}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.player .spin::before{animation:none}.reveal{opacity:1;transform:none;transition:none}}
 </style>
 </head>
@@ -214,13 +227,16 @@ a.topic:hover,button.topic:hover{transform:translateY(-4px);box-shadow:0 26px 60
   <section class="wrap hero">
     <div>
       <div class="eyebrow">ตั้งแต่ประถมถึง ม.ปลาย</div>
-      <h1>วิทยาศาสตร์<br>ที่เข้าใจได้<br>เพราะได้ลองเอง</h1>
+      <h1>วิทยาศาสตร์<br class="m">ที่เข้าใจได้<br>เพราะได้ลองเอง</h1>
       <p class="deck">ดูคลิปสั้นให้สงสัย เล่นซิมูเลชันให้เห็นกับตา แล้วเรียนต่อเป็นคอร์สเมื่อพร้อม</p>
-      <div class="cta"><a class="btn" href="#courses">ดูคอร์สทั้งหมด</a><a class="btn ghost" href="#story">ลองเรียนฟรีก่อน</a></div>
+      <div class="cta" style="justify-content:center"><a class="btn" href="#courses">ดูคอร์สทั้งหมด</a><a class="btn ghost" href="#story">ลองเรียนฟรีก่อน</a></div>
       <div class="who"><b>ตอนนี้เรียนชั้นไหน</b><div class="lvs" data-lvs="hero"></div></div>
     </div>
-    <article class="lab flat hero-lab" data-scene="mixing"><div class="stage"><canvas aria-label="ภาพจำลอง 3 มิติ: แสงสามสีบนจอ"></canvas><span class="hint">เล่นได้เลย ลากเพื่อหมุน</span><div class="nogl">อุปกรณ์นี้เปิดภาพ 3 มิติไม่ได้ ลองเปิดจากเบราว์เซอร์อื่น</div></div><div class="ctl"><h3>ปิดแสงน้ำเงิน แล้วจอจะเหลือสีอะไร</h3><label for="hr">แสงแดง</label><input id="hr" type="range" min="0" max="1" step=".05" value="1" style="accent-color:#ff3b30"><label for="hg">แสงเขียว</label><input id="hg" type="range" min="0" max="1" step=".05" value="1" style="accent-color:#34c759"><label for="hb">แสงน้ำเงิน</label><input id="hb" type="range" min="0" max="1" step=".05" value="1" style="accent-color:#0071e3"><output></output></div></article>
   </section>
+  <nav class="wrap doors" aria-label="เข้าสู่เว็บคอร์สและเว็บซิมูเลชัน">
+    <a class="door c reveal" href="https://course.kpscience.com/"><span class="door-art play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3.5v17l15-8.5z"/></svg></span><small>เรียนเป็นบท ๆ กับครู</small><h2>คอร์สออนไลน์</h2><p>คลิป เอกสาร และแบบทดสอบ เรียนซ้ำได้ตามจังหวะของตัวเอง</p><span class="go">ไปที่เว็บคอร์ส</span></a>
+    <a class="door s reveal" style="--d:.1s" href="https://kp-science.github.io/physics-simulations/"><span class="door-art rgb" aria-hidden="true"><i></i><i></i><i></i></span><small>ลองเล่นได้ฟรี</small><h2>ซิมูเลชัน</h2><p>ลองปรับค่าแล้วเห็นผลทันที เปิดในเบราว์เซอร์ได้เลย</p><span class="go">ไปที่เว็บซิมูเลชัน</span></a>
+  </nav>
   <section class="sec tint" id="story" aria-labelledby="storyT"><div class="wrap">
     <div class="sec-h reveal"><div class="eyebrow">เรียนที่นี่เป็นแบบนี้</div><h2 id="storyT">เด็กตัวเล็กยกผู้ใหญ่บนไม้กระดกได้ยังไง</h2><p>ลองเดินตามเรื่องนี้ดู จากคำถามเดียว ไปจนเข้าใจโมเมนต์ของแรง</p></div>
     <div class="steps">

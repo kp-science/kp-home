@@ -141,45 +141,6 @@
     };
   }
 
-  /* ผสมแสงสี (แลป 162): แสงสามสีบวกกันบนจอ ใช้ additive blending จึงได้สีผสมจริงตรงส่วนที่ซ้อนกัน */
-  function softDisc() {
-    const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'), r = g.createRadialGradient(128, 128, 0, 128, 128, 128);
-    r.addColorStop(0, '#fff'); r.addColorStop(.84, '#fff'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 256, 256);
-    return new THREE.CanvasTexture(c);
-  }
-  function colorName(r, g, b) {
-    const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
-    if (mx < .03) return 'ดำ เพราะไม่มีแสง';
-    if ((mx - mn) / mx < .14) return mx > .75 ? 'ขาว' : 'เทา';
-    const d = mx - mn; let h = mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60;
-    const names = [[15, 'แดง'], [45, 'ส้ม'], [72, 'เหลือง'], [105, 'เขียวอมเหลือง'], [150, 'เขียว'], [200, 'ฟ้าอมเขียว (ไซแอน)'], [255, 'น้ำเงิน'], [285, 'ม่วง'], [325, 'ม่วงแดง (แมเจนตา)'], [345, 'ชมพู'], [361, 'แดง']];
-    return names.find(n => h < n[0])[1];
-  }
-  function mixing({ scene, pivot, view, card }) {
-    view.dist = 10.4; view.pitch = .08; view.yaw = .4; lights(scene);
-    const screen = new THREE.Mesh(new THREE.BoxGeometry(5.2, 4, .12), enamel(0x14171d, .85)); screen.position.z = -1.2; pivot.add(screen);
-    const face = new THREE.Mesh(new THREE.PlaneGeometry(4.9, 3.7), new THREE.MeshBasicMaterial({ color: 0x060709 })); face.position.z = -1.13; pivot.add(face);
-    [-2, 2].forEach(x => { const leg = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, 1, 14), metal()); leg.position.set(x, -2.4, -1.2); const foot = new THREE.Mesh(new THREE.BoxGeometry(.2, .05, 1.1), enamel(0x1d2229)); foot.position.set(x, -2.88, -1.2); pivot.add(leg, foot); });
-    const tex = softDisc(), SET = [[0xff0000, -.66, -.44, -2.1, -2, 2.6], [0x00ff00, .66, -.44, 2.1, -2, 2.6], [0x0000ff, 0, .7, 0, 2.15, 2.6]];
-    const lamps = SET.map(([hex, cx, cy, lx, ly, lz], i) => {
-      const col = new THREE.Color(hex);
-      const disc = new THREE.Mesh(new THREE.CircleGeometry(1.34, 56), new THREE.MeshBasicMaterial({ map: tex, color: col.clone(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); disc.position.set(cx, cy, -1.12 + i * .001); pivot.add(disc);
-      const from = V3(lx, ly, lz), to = V3(cx, cy, -1.1), beam = new THREE.Mesh(new THREE.CylinderGeometry(.09, .98, 1, 36, 1, true), new THREE.MeshBasicMaterial({ color: col.clone(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); beam.renderOrder = 8;
-      const d = to.clone().sub(from); beam.position.copy(from).addScaledVector(d, .5); beam.quaternion.setFromUnitVectors(UP(), d.clone().normalize().negate()); beam.scale.y = d.length(); pivot.add(beam);
-      const head = new THREE.Group(), can = new THREE.Mesh(new THREE.CylinderGeometry(.16, .25, .52, 28), new THREE.MeshPhysicalMaterial({ color: 0x24272d, metalness: .6, roughness: .38, clearcoat: .3 })), lens = new THREE.Mesh(new THREE.CylinderGeometry(.14, .14, .02, 24), new THREE.MeshBasicMaterial({ color: col.clone() })); lens.position.y = .265; can.rotation.x = Math.PI; head.add(can, lens); head.position.copy(from); head.quaternion.setFromUnitVectors(UP(), d.clone().normalize()); pivot.add(head);
-      return { disc, beam, lens, col };
-    });
-    const out = card.querySelector('output');
-    return {
-      set(r, g, b) {
-        [r, g, b].forEach((v, i) => { const l = lamps[i]; l.disc.material.color.copy(l.col).multiplyScalar(v); l.beam.material.opacity = .075 * v; l.beam.visible = v > .01; l.lens.material.color.copy(l.col).multiplyScalar(.2 + .8 * v); });
-        const px = v => Math.round(v * 255);
-        out.innerHTML = `<i class="sw" style="background:rgb(${px(r)},${px(g)},${px(b)})"></i>ตรงกลางจอเป็นสี${colorName(r, g, b)} · แดง ${fmt(r * 100)} เขียว ${fmt(g * 100)} น้ำเงิน ${fmt(b * 100)}`;
-      },
-      step() {},
-    };
-  }
-
   /* พื้นเอียง (แลป 5): แยกน้ำหนัก W เป็น W sinθ ตามพื้น และ W cosθ ตั้งฉากพื้น เชือกรับ W sinθ ส่วนพื้นดันกลับ N = W cosθ */
   function incline({ scene, pivot, view, card }) {
     view.dist = 10.2; view.pitch = .1; view.yaw = .26; lights(scene);
@@ -305,7 +266,7 @@
     };
   }
 
-  const SCENES = { fibre, mixing, incline, punch, seesaw }, cards = document.querySelectorAll('.lab');
+  const SCENES = { fibre, incline, punch, seesaw }, cards = document.querySelectorAll('.lab');
   if (!cards.length) return;
   const fail = () => cards.forEach(c => c.querySelector('.stage').classList.add('fail'));
   const start = c => { if (c.dataset.up) return; c.dataset.up = 1; try { mount(c, SCENES[c.dataset.scene]); } catch (e) { console.warn('3D', e); c.querySelector('.stage').classList.add('fail'); } };
