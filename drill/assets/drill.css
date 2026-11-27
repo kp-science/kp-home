@@ -269,23 +269,25 @@ footer .site:hover{text-decoration:underline}
 .hero p{margin:0;color:var(--ink-soft);max-width:58ch;font-size:1.02rem}
 /* ---------- หน้ารวม: หนึ่งระดับชั้น = การ์ดใบหนึ่ง ----------
    แบ่งเป็นกล่องชัด ๆ พร้อมสีประจำชั้น เพื่อให้หาชั้นของตัวเองก่อนแล้วค่อยอ่านหัวข้อ */
-.gcard{--g:var(--accent);
-  margin-top:1.1rem;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--g);
+.gcard{--g:#ff5a36; --g2:#ff9166;
+  margin-top:1.1rem;background:var(--card);border:1px solid var(--line);
   border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
-.gcard.g-prathom{--g:var(--dim)}
-.gcard.g-m-ton{--g:var(--accent)}
-.gcard.g-m-plai{--g:var(--steel)}
+/* สีประจำชั้น — ประถมเขียว ม.ต้นส้ม ม.ปลายม่วง แถบหัวเป็นสีเต็ม ตัวการ์ดเป็นสีเดียวกันแบบจาง
+   เด็กกวาดตาหาสีของชั้นตัวเองได้ก่อนอ่านตัวหนังสือ */
+.gcard.g-prathom{--g:#16a34a; --g2:#4ec77f}
+.gcard.g-m-ton{--g:#ff5a36; --g2:#ff9166}
+.gcard.g-m-plai{--g:#7a3fae; --g2:#ab72e0}
 .gcard-top{display:flex;flex-wrap:wrap;gap:.3rem .8rem;align-items:center;justify-content:space-between;
-  padding:.7rem 1rem;background:var(--card);border-bottom:1px solid var(--line-soft)}
+  padding:.75rem 1rem;color:#fff;background:linear-gradient(120deg,var(--g),var(--g2))}
 .gc-id{display:flex;flex-wrap:wrap;gap:.1rem .7rem;align-items:baseline;min-width:0}
 .gcard-top h2{margin:0;font-size:1.12rem}
-.gcard-top h2 a{text-decoration:none;color:var(--g)}
+.gcard-top h2 a{text-decoration:none;color:#fff}
 .gcard-top h2 a:hover{text-decoration:underline}
-.gcard-top .n{font-size:.82rem;color:var(--ink-soft)}
-.cnt{font-family:var(--font-d);font-weight:600;font-size:.75rem;color:var(--ink-soft);
-  background:var(--sunk);border:1px solid var(--line);border-radius:99px;padding:.1rem .6rem}
+.gcard-top .n{font-size:.82rem;color:rgba(255,255,255,.85)}
+.cnt{font-family:var(--font-d);font-weight:600;font-size:.75rem;color:#fff;
+  background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.45);border-radius:99px;padding:.1rem .6rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.7rem;
-  margin:0;padding:.85rem 1rem 1rem;background:var(--sunk)}
+  margin:0;padding:.85rem 1rem 1rem;background:color-mix(in srgb,var(--g) 9%,var(--card))}
 .card-link{
   display:flex;flex-direction:column;text-decoration:none;color:inherit;background:var(--card);
   border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;
@@ -296,7 +298,7 @@ footer .site:hover{text-decoration:underline}
 .card-link p{margin:0;font-size:.88rem;color:var(--ink-soft);line-height:1.6;flex:1}
 .card-link .go{display:inline-block;margin-top:.7rem;font-family:var(--font-d);font-weight:700;
   font-size:.86rem;color:var(--g,var(--accent))}
-.card-soon{background:transparent;border-style:dashed;opacity:.65}
+.card-soon{background:transparent;border-style:dashed;border-color:color-mix(in srgb,var(--g) 35%,var(--line));opacity:.7}
 .card-soon:hover{border-color:var(--line);transform:none;box-shadow:none}
 .soon{display:inline-block;margin-top:.7rem;font-size:.74rem;color:var(--ink-soft);
   border:1px solid var(--line);border-radius:99px;padding:.1rem .6rem;align-self:flex-start}
