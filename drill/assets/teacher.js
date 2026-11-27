@@ -311,8 +311,10 @@ if (window.KPAUTH){
   if (btn) btn.onclick = pullCloud;
   let first = true;
   KPAUTH.onChange(u => {
-    const box = $('cloudbox');
+    const box = $('cloudbox'), bar = $('signinbar');
     if (box) box.hidden = !u;
+    /* ล็อกอินแล้วแถบชวนล็อกอินหมดหน้าที่ ปุ่มออกจากระบบย้ายไปอยู่ในกล่องดึงผลแทน */
+    if (bar) bar.classList.toggle('done', !!u);
     if (u && first){ first = false; pullCloud(); }
     if (!u) first = true;
   });

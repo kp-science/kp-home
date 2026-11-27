@@ -779,3 +779,25 @@ body.has-kt{padding-bottom:104px}
 /* ในด่านนี้ข้อความอธิบายอยู่ด้านบนแล้ว ไม่ต้องพูดซ้ำในกล่อง */
 .gate-acct .acct-h,.gate-acct .acct-note{display:none}
 .gate-acct .acct-pop{padding-top:.85rem}
+
+/* ---------- แถบชวนครูล็อกอิน ----------
+   ปุ่มเล็ก ๆ ในหัวเรื่องหาไม่เจอ เลยทำเป็นแถบเต็มความกว้างพร้อมบอกว่ากดแล้วได้อะไร */
+.signin{
+  display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
+  margin-top:1rem; padding:.9rem 1.1rem;
+  background:var(--accent-bg); border:1px solid var(--accent-2); border-radius:14px;
+}
+.signin-t{flex:1 1 16rem; min-width:0}
+.signin-t b{display:block; font-size:1rem}
+.signin-t span{display:block; color:var(--ink-soft); font-size:.88rem; line-height:1.55; margin-top:.15rem}
+.signin .acct{flex:0 0 auto}
+.signin .acct-btn{
+  background:var(--accent); color:#fff; border-color:var(--accent);
+  font-size:.98rem; padding:.5rem 1.2rem;
+}
+/* ล็อกอินแล้วเหลือแค่ชื่อกับปุ่มออก ไม่ต้องชวนอีก */
+.signin.done{background:var(--sunk); border-color:var(--line)}
+.signin.done .signin-t{display:none}
+.signin.done{justify-content:flex-end; padding:.55rem .8rem}
+/* จอแคบแถบนี้จะตกบรรทัด ปุ่มเลยไปอยู่ซ้าย กล่องที่กางจากขอบขวาจะล้นออกนอกจอ */
+.signin .acct-pop{left:0; right:auto; max-width:calc(100vw - 3rem)}
