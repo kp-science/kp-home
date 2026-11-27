@@ -723,3 +723,34 @@ body.has-kt{padding-bottom:104px}
   .kt-dock{right:10px;bottom:10px;flex-direction:row}
   .kt-fab{width:46px;height:46px}
 }
+
+/* ─── บัญชีผู้ใช้ (ใช้ล็อกอินเดียวกับเว็บคอร์ส) ───────────────────
+   ปุ่มเดียวเล็ก ๆ ข้างยศ กดแล้วกล่องกรอกค่อยลงมา ไม่กินที่ตอนปกติ */
+.hd-right{display:flex;flex-direction:column;align-items:flex-end;gap:.35rem;min-width:0}
+.acct{position:relative}
+.acct-btn{font-family:var(--font-d);font-weight:600;font-size:.76rem;padding:.2rem .65rem;
+  border-radius:99px;background:var(--sunk);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer}
+.acct-btn:hover{border-color:var(--accent);color:var(--accent)}
+.acct-in{display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:var(--ink-soft)}
+.acct-nm{font-family:var(--font-d);font-weight:700;color:var(--dim);max-width:130px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-out{font-size:.72rem;padding:.1rem .5rem;border-radius:99px;background:transparent;
+  border:1px solid var(--line);color:var(--ink-soft);cursor:pointer}
+.acct-off{font-size:.72rem;color:var(--ink-soft)}
+.acct-pop{position:absolute;right:0;top:calc(100% + 6px);z-index:60;width:min(260px,calc(100vw - 32px));
+  background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+  padding:.7rem .75rem;display:flex;flex-direction:column;gap:.4rem;text-align:left}
+.acct-h{font-family:var(--font-d);font-weight:700;font-size:.85rem}
+.acct-or{font-size:.72rem;color:var(--ink-soft);text-align:center}
+.acct-pop input{font-size:.85rem;padding:.35rem .55rem;border-radius:8px;
+  border:1px solid var(--line);background:var(--sunk);color:var(--ink);width:100%}
+.acct-g,.acct-go{font-family:var(--font-d);font-weight:700;font-size:.82rem;padding:.35rem .6rem;
+  border-radius:8px;cursor:pointer}
+.acct-g{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.acct-g:hover{border-color:var(--accent);color:var(--accent)}
+.acct-go{background:var(--accent);border:1px solid var(--accent);color:#fff}
+.acct-go:disabled,.acct-g:disabled{opacity:.6;cursor:default}
+.acct-err{font-size:.76rem;color:var(--bad);line-height:1.5}
+.acct-note{font-size:.71rem;color:var(--ink-soft);line-height:1.55}
+.cloudbox{margin-top:.8rem}
+.hero .acct{flex:0 0 auto;align-self:flex-start}

@@ -53,6 +53,39 @@ function add(){
   $('pmsg').textContent = parts.join(' · ');
 }
 
+/* ---------- ดึงผลจากคลาวด์ (นักเรียนที่ล็อกอินด้วยบัญชีคอร์ส) ----------
+   แปลงเอกสารของคลาวด์ให้อยู่ในรูปเดียวกับรหัสที่นักเรียนส่งมา
+   ตารางและสรุปผลด้านล่างจึงใช้โค้ดเดิมได้ทั้งหมด */
+function pad(n){ return String(n).padStart(2,'0'); }
+function dateOf(ts){
+  const d = ts && ts.toDate ? ts.toDate() : new Date();
+  return d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
+}
+function fromCloud(docs){
+  return docs.map(d => {
+    const lv = levelsOf(d.topicId).map(l => l.n);
+    const keys = lv.length ? lv : Object.keys(d.m||{}).map(Number).sort((a,b)=>a-b);
+    const m = keys.map(n => Math.round(Number((d.m||{})[n]) || 0));
+    if (!m.length) return null;
+    const tries = Object.values(d.tries||{}).reduce((a,b)=>a+(Number(b)||0), 0);
+    const who = (d.name || (d.email||'').split('@')[0] || 'ไม่ระบุชื่อ');
+    return KPRANK.unpack(KPRANK.pack({who, topic:d.topicId, lv:d.lv||1, m,
+      points:d.points||0, tries, date:dateOf(d.updatedAt)}));
+  }).filter(Boolean);
+}
+
+async function pullCloud(){
+  const btn = $('cloudbtn'), msg = $('cmsg');
+  if (!window.KPAUTH || !KPAUTH.user()){ if(msg) msg.textContent='ต้องล็อกอินด้วยบัญชีครูก่อน'; return; }
+  btn.disabled = true; msg.textContent = 'กำลังดึง...';
+  const docs = await KPAUTH.classList();
+  btn.disabled = false;
+  if (!docs){ msg.textContent = 'ดึงไม่สำเร็จ — บัญชีนี้อาจยังไม่มีสิทธิ์ครู หรือกฎความปลอดภัยยังไม่ได้อัปเดต'; return; }
+  const list = fromCloud(docs);
+  merge(list); save(); draw();
+  msg.textContent = list.length ? ('ได้ผลจากคลาวด์ ' + list.length + ' รายการ') : 'ยังไม่มีนักเรียนที่ล็อกอินส่งผลเข้ามา';
+}
+
 /* ---------- ตาราง ---------- */
 function levelsOf(topic){ return (META[topic] && META[topic].levels) || []; }
 function topicName(topic){ return (META[topic] && META[topic].name) || topic; }
@@ -270,5 +303,19 @@ $('clrbtn').onclick = function(){
   else { this.dataset.c = 1; this.textContent = 'กดอีกครั้งเพื่อยืนยันการล้าง'; }
 };
 $('paste').addEventListener('paste', ()=>setTimeout(add, 0));
+
+/* บัญชีครู — ล็อกอินแล้วปุ่มดึงผลจากคลาวด์จะโผล่ขึ้นมา และดึงให้รอบแรกเลย */
+if (window.KPAUTH){
+  KPAUTH.mount($('acct'));
+  const btn = $('cloudbtn');
+  if (btn) btn.onclick = pullCloud;
+  let first = true;
+  KPAUTH.onChange(u => {
+    const box = $('cloudbox');
+    if (box) box.hidden = !u;
+    if (u && first){ first = false; pullCloud(); }
+    if (!u) first = true;
+  });
+}
 draw();
 })();

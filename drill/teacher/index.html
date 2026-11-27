@@ -20,13 +20,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="../assets/drill.css?v=zvjl87">
+<link rel="stylesheet" href="../assets/drill.css?v=1nz51s1">
 </head>
 <body>
 <div class="wrap wide">
 <div class="crumb"><a href="../">ฝึกทำโจทย์</a><span aria-hidden="true">›</span><span>สรุปผลนักเรียน</span></div>
-<div class="hero"><h1>สรุปผลนักเรียน</h1>
-<p>ให้นักเรียนกดปุ่ม <b>ส่งผลให้ครู</b> ที่ท้ายหน้าเกม แล้วคัดลอกรหัสผลส่งมาในไลน์ · ครูคัดลอกทุกบรรทัดมาวางในช่องล่างนี้ทีเดียวได้เลย</p></div>
+<div class="hero"><div><h1>สรุปผลนักเรียน</h1>
+<p>นักเรียนที่ล็อกอินด้วยบัญชีคอร์ส ผลจะขึ้นเองเมื่อครูล็อกอิน · ส่วนคนที่ไม่ได้ล็อกอิน ให้กดปุ่ม <b>ส่งผลให้ครู</b> ท้ายหน้าเกมแล้วส่งรหัสมา วางในช่องล่างนี้ทีเดียวหลายคนได้</p></div>
+<div class="acct" id="acct"></div></div>
+
+<div class="cloudbox" id="cloudbox" hidden>
+  <div class="pact">
+    <button class="go" id="cloudbtn">ดึงผลนักเรียนจากคลาวด์</button>
+    <span class="sh-msg" id="cmsg"></span>
+  </div>
+</div>
 
 <div class="pastebox">
   <label for="paste">รหัสผลของนักเรียน (วางได้หลายคน บรรทัดละคน)</label>
@@ -80,9 +88,10 @@ var n=d==='dark'?'light':d==='light'?'':'dark';
 if(n)document.documentElement.setAttribute('data-theme',n);else document.documentElement.removeAttribute('data-theme');
 try{n?localStorage.setItem(K,n):localStorage.removeItem(K);}catch(e){}lab();};
 lab();var f=document.querySelector('footer');if(f)f.appendChild(b);})();</script>
-<script src="../assets/art.js?v=zvjl87"></script>
-<script src="../assets/rank.js?v=zvjl87"></script>
+<script src="../assets/art.js?v=1nz51s1"></script>
+<script src="../assets/rank.js?v=1nz51s1"></script>
 <script>window.TOPICMETA={"m-ton.moment":{"name":"โมเมนต์ของแรง · ม.ต้น","levels":[{"n":1,"t":"แทนค่าในสูตร M = F d"},{"n":2,"t":"ย้อนสูตร หาแรงหรือระยะอาร์ม"},{"n":3,"t":"แปลงหน่วยก่อนคิด"},{"n":4,"t":"คานเบาสมดุล ΣM ทวน = ΣM ตาม"},{"n":5,"t":"เขียนแรงให้ครบ (หลายแรง · คานมีน้ำหนัก)"},{"n":6,"t":"เลือกจุดหมุน และแรงที่จุดรองรับ"},{"n":7,"t":"ตัวลวงในโจทย์ และการได้เปรียบเชิงกล"},{"n":8,"t":"กระดก จุดศูนย์ถ่วง และคานไม่ตรง"}]}}</script>
-<script src="../assets/teacher.js?v=zvjl87"></script>
+<script src="../assets/auth.js?v=1nz51s1"></script>
+<script src="../assets/teacher.js?v=1nz51s1"></script>
 </body>
 </html>

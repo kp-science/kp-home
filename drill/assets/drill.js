@@ -176,7 +176,29 @@ function load(){
   try{const r=localStorage.getItem(KEY); if(r){const o=JSON.parse(r); if(o&&o.m) return Object.assign(fresh(),o);}}catch(e){}
   return fresh();
 }
-function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  /* ถ้าล็อกอินอยู่ ส่งขึ้นคลาวด์แบบหน่วง ไม่ยิงทุกข้อ */
+  if(window.KPAUTH && KPAUTH.user()) KPAUTH.pushLater(TOPIC_ID, S);
+}
+
+/* รวมความคืบหน้าของเครื่องนี้กับของคลาวด์ โดยเอา "มากกว่า" ของแต่ละอย่าง
+   เพราะเด็กอาจเล่นค้างไว้ทั้งสองที่ และการลดความคืบหน้าของใครลงคือสิ่งที่ยอมไม่ได้ */
+function mergeCloud(c){
+  if(!c) return false;
+  let changed=false;
+  const bump=(a,b)=>{ const v=Math.max(Number(a)||0, Number(b)||0); return v; };
+  for(const l of LEVELS){
+    const n=l.n;
+    const m=bump(S.m[n], (c.m||{})[n]); if(m!==S.m[n]){ S.m[n]=m; changed=true; }
+    const t=bump(S.tries[n], (c.tries||{})[n]); if(t!==(S.tries[n]||0)){ S.tries[n]=t; changed=true; }
+  }
+  const lv=Math.min(LEVELS.length, bump(S.lv, c.lv)); if(lv!==S.lv){ S.lv=lv; changed=true; }
+  const sc=bump(S.score, c.points); if(sc!==S.score){ S.score=sc; S.best=Math.max(S.best||0,sc); changed=true; }
+  const dn=bump(S.downs, c.downs); if(dn!==(S.downs||0)){ S.downs=dn; changed=true; }
+  if(!S.map || S.map>S.lv) S.map=S.lv;
+  return changed;
+}
 
 /* ---------- สุ่มโจทย์จาก template ---------- */
 const rnd=(a,b,s)=>{const n=Math.round((b-a)/s); return +(a+s*Math.floor(Math.random()*(n+1))).toFixed(4);};
@@ -774,6 +796,24 @@ function start(topic){
   /* นับวันที่เข้ามาทำ สะสมอย่างเดียว ขาดวันไม่รีเซ็ต จะได้ไม่กลายเป็นภาระ */
   S.days=S.days||[];
   if(S.days.indexOf(today())<0){ S.days.push(today()); if(S.days.length>400) S.days.shift(); save(); }
+  /* แถบบัญชี — ล็อกอินแล้วดึงความคืบหน้าจากคลาวด์มารวมกับของเครื่องนี้ */
+  if(window.KPAUTH){
+    KPAUTH.mount($('acct'));
+    let lastUid=null;
+    KPAUTH.onChange(async u=>{
+      const uid=u?u.uid:null;
+      if(uid===lastUid) return;
+      lastUid=uid;
+      if(!u) return;
+      const cloud=await KPAUTH.pull(TOPIC_ID);
+      const changed=mergeCloud(cloud);
+      save();                       /* ไม่มีของเก่าบนคลาวด์ก็ถือว่าอัปของเครื่องนี้ขึ้นไป */
+      if(changed){ head(); cardsUI(); }
+      const n=$('note');
+      if(n) n.textContent='ซิงค์กับบัญชี '+KPAUTH.name()+' แล้ว';
+    });
+    window.addEventListener('beforeunload',()=>{ try{KPAUTH.flush();}catch(e){} });
+  }
   const mp=$('map');
   if(mp) mp.addEventListener('click', e=>{
     const b=e.target.closest('button[data-m]'); if(!b||b.disabled) return;
