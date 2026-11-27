@@ -17,6 +17,9 @@ const CFG = {
 };
 const SDK = 'https://www.gstatic.com/firebasejs/9.23.0/';
 const COL = 'drill_scores';
+/* กระดานอันดับแยกคนละที่กับผลเต็ม เพราะเพื่อนร่วมชั้นต้องอ่านได้
+   จึงใส่เฉพาะชื่อที่ตั้งเอง ระดับ และแต้ม ไม่มีอีเมล ไม่มีเลือด ไม่มีจำนวนครั้งที่ตก */
+const RANKCOL = 'drill_rank';
 
 let fb=null, auth=null, db=null, user=null, ready=false, failed=false;
 const subs=[];
@@ -114,14 +117,43 @@ async function push(topic, S){
   catch(e){ console.warn('บันทึกขึ้นคลาวด์ไม่ได้', e); return false; }
 }
 
+/* ---------- กระดานอันดับ ---------- */
+async function pushRank(topic, S){
+  await boot(); if(!db || !user) return false;
+  const data = {
+    uid: user.uid,
+    name: nameOf(user).slice(0,60),
+    topicId: String(topic).slice(0,60),
+    lv: Math.max(0, Math.min(50, Math.round(S.lv||1))),
+    points: Math.max(0, Math.min(1000000, Math.round(S.score||0))),
+    updatedAt: fb.firestore.FieldValue.serverTimestamp(),
+  };
+  try{ await db.collection(RANKCOL).doc(idOf(topic)).set(data); return true; }
+  catch(e){ console.warn('ส่งอันดับไม่ได้', e); return false; }
+}
+
+/* รายชื่อทั้งหัวข้อ เรียงระดับก่อน แล้วค่อยแต้ม ตามที่ครูเลือกไว้ */
+async function rankList(topic){
+  await boot(); if(!db || !user) return null;
+  try{
+    const s = await db.collection(RANKCOL).where('topicId','==',topic).get();
+    const list = s.docs.map(d=>d.data()).filter(d=>d && d.name);
+    list.sort((a,b)=> (b.lv||0)-(a.lv||0) || (b.points||0)-(a.points||0)
+                      || String(a.name).localeCompare(String(b.name),'th'));
+    return list;
+  }catch(e){ console.warn('อ่านกระดานอันดับไม่ได้', e); return null; }
+}
+
 /* ส่งขึ้นคลาวด์แบบหน่วงไว้ ไม่ให้ยิงทุกครั้งที่กดตรวจคำตอบ */
 let timer=null, pending=null;
 function pushLater(topic, S, ms){
   pending={topic, S};
   if(timer) return;
-  timer=setTimeout(()=>{ timer=null; const p=pending; pending=null; if(p) push(p.topic, p.S); }, ms||6000);
+  timer=setTimeout(()=>{ timer=null; const p=pending; pending=null;
+    if(p){ push(p.topic, p.S); pushRank(p.topic, p.S); } }, ms||6000);
 }
-function flush(){ if(pending){ const p=pending; pending=null; clearTimeout(timer); timer=null; push(p.topic, p.S); } }
+function flush(){ if(pending){ const p=pending; pending=null; clearTimeout(timer); timer=null;
+  push(p.topic, p.S); pushRank(p.topic, p.S); } }
 
 /* ---------- สำหรับหน้าครู ---------- */
 async function classList(topic){
@@ -182,7 +214,7 @@ function mount(box){
 
 return {
   boot, onChange, mount, loginGoogle, loginEmail, logout,
-  pull, push, pushLater, flush, classList,
+  pull, push, pushLater, flush, classList, pushRank, rankList,
   user: ()=>user, name: ()=>nameOf(user), ready: ()=>ready, failed: ()=>failed,
 };
 })();

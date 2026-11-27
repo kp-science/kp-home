@@ -754,6 +754,65 @@ function myCode(){
                       points:S.score, tries, date});
 }
 
+/* ---------- กระดานอันดับของหัวข้อนี้ ----------
+   เด็กกดดูได้เองว่าตัวเองอยู่อันดับไหน ไม่ต้องรอครูประกาศ
+   อ่านจากคลังอันดับที่มีแค่ชื่อ ระดับ แต้ม ผลเต็มของแต่ละคนยังอ่านได้เฉพาะเจ้าของกับครู */
+function rankRows(list, meUid){
+  const meAt = list.findIndex(r=>r.uid===meUid);
+  /* โชว์ 10 อันดับแรก บวกคนที่อยู่ติดเราทั้งบนและล่าง จะได้รู้ว่ากำลังไล่ใครอยู่ */
+  const keep = new Set();
+  for(let i=0;i<Math.min(10,list.length);i++) keep.add(i);
+  if(meAt>=0) for(let i=meAt-1;i<=meAt+1;i++) if(i>=0 && i<list.length) keep.add(i);
+  const idx=[...keep].sort((a,b)=>a-b);
+  let out='', prev=-1;
+  for(const i of idx){
+    if(prev>=0 && i>prev+1) out+='<li class="rk-gap">⋯</li>';
+    prev=i;
+    const r=list[i], me=r.uid===meUid;
+    out += '<li class="'+(me?'rk-me':'')+(i<3?' rk-top':'')+'">'+
+      '<span class="rk-n">'+(i+1)+'</span>'+
+      '<span class="rk-w">'+esc(r.name)+(me?' <em>(เรา)</em>':'')+'</span>'+
+      '<span class="rk-l">ระดับ '+(r.lv||1)+'</span>'+
+      '<span class="rk-p">'+Math.round(r.points||0).toLocaleString('th-TH')+' แต้ม</span></li>';
+  }
+  return out;
+}
+async function rankUI(){
+  const box=$('rankbox'); if(!box) return;
+  const close='<button type="button" class="sh-x" id="rkx">ปิด</button>';
+  box.hidden=false;
+  box.innerHTML='<div class="sh-head"><b>อันดับในหัวข้อนี้</b>'+close+'</div>'+
+                '<p class="sh-note">กำลังดึงอันดับ…</p>';
+  $('rkx').onclick=()=>{ box.hidden=true; };
+  if(!window.KPAUTH || KPAUTH.failed() || !KPAUTH.user()){
+    box.innerHTML='<div class="sh-head"><b>อันดับในหัวข้อนี้</b>'+close+'</div>'+
+      '<p class="sh-note">ต้องเข้าสู่ระบบก่อนถึงจะเห็นอันดับ</p>';
+    $('rkx').onclick=()=>{ box.hidden=true; };
+    return;
+  }
+  try{ KPAUTH.flush(); }catch(e){}        /* ส่งแต้มล่าสุดขึ้นก่อน จะได้ไม่ดูอันดับของเมื่อกี้ */
+  const list = await KPAUTH.rankList(TOPIC_ID);
+  const me = KPAUTH.user() ? KPAUTH.user().uid : null;
+  if(!list){
+    box.innerHTML='<div class="sh-head"><b>อันดับในหัวข้อนี้</b>'+close+'</div>'+
+      '<p class="sh-note">ดึงอันดับไม่สำเร็จ ลองใหม่อีกครั้ง</p>';
+  }else if(!list.length){
+    box.innerHTML='<div class="sh-head"><b>อันดับในหัวข้อนี้</b>'+close+'</div>'+
+      '<p class="sh-note">ยังไม่มีใครในกระดาน ทำโจทย์สักข้อแล้วกลับมาดูใหม่</p>';
+  }else{
+    const at = list.findIndex(r=>r.uid===me);
+    const head = at>=0
+      ? 'อันดับของเรา <b>'+(at+1)+'</b> จาก '+list.length+' คน'
+      : 'ยังไม่มีชื่อเราในกระดาน ทำโจทย์สักข้อก่อน';
+    box.innerHTML='<div class="sh-head"><b>อันดับในหัวข้อนี้</b>'+close+'</div>'+
+      '<p class="rk-sum">'+head+'</p>'+
+      '<ol class="rk">'+rankRows(list, me)+'</ol>'+
+      '<p class="sh-note">เรียงตามระดับที่ไปถึงก่อน ระดับเท่ากันจึงดูแต้ม · อันดับขยับช้ากว่าที่ทำจริงไม่กี่วินาที</p>';
+  }
+  $('rkx').onclick=()=>{ box.hidden=true; };
+  box.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
 function shareUI(){
   const box = $('sharebox'); if(!box) return;
   let who=''; try{ who = localStorage.getItem(WHOKEY) || ''; }catch(e){}
@@ -813,9 +872,10 @@ function gateUI(){
   if(gateOn !== stateKey){
     gateOn = stateKey;
     g.hidden = !lock; play.hidden = lock;
-    const sh=$('share'), rs=$('reset');
+    const sh=$('share'), rs=$('reset'), rk=$('rankbtn');
     if(sh) sh.hidden = lock;
     if(rs) rs.hidden = lock;
+    if(rk) rk.hidden = lock;
     if(lock){
       g.innerHTML = gateHTML(waiting);
       if(!waiting && window.KPAUTH){
@@ -883,6 +943,8 @@ function start(topic){
   questUI(); cardsUI();
   const sh=$('share');
   if(sh) sh.onclick=()=>{ const b=$('sharebox'); if(b && !b.hidden){ b.hidden=true; } else { shareUI(); } };
+  const rb2=$('rankbtn');
+  if(rb2) rb2.onclick=()=>{ const b=$('rankbox'); if(b && !b.hidden){ b.hidden=true; } else { rankUI(); } };
   next({});
 }
 
