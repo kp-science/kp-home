@@ -1,0 +1,711 @@
+/* ─────────────────────────────────────────────────────────────
+   ฝึกทำโจทย์ KP Science
+   แนวทาง: ทั้งหน้าเป็น "กระดาษเขียนแบบ" ให้เข้ากับรูปคานที่เป็นแบบร่าง
+   สีส้มของลูกศรแรงในรูป คือสีหลักของหน้า ใช้กับสิ่งที่กำลังเกิดขึ้น
+   สีเขียวของเส้นบอกระยะ คือสีของความคืบหน้าและคำตอบที่ถูก
+   เลย์เอาต์: คอลัมน์เดียว 780px · แถบระดับเป็นคานกระดก · โจทย์อยู่บนแผ่นแบบ
+   ───────────────────────────────────────────────────────────── */
+:root{
+  --paper:#fffcf9;  --grid:transparent; --card:#ffffff; --sunk:#fbf6f1;
+  --ink:#1d1a17;    --ink-soft:#7b6a5d; --line:#efe7de; --line-soft:#f8f3ee;
+  --accent:#ff5a36; --accent-2:#ffb49c; --accent-bg:#fff0ea;
+  --steel:#8b3ec9;  --dim:#2f9e44;    --ok:#2f9e44;   --bad:#e23c43;
+  --hp:#e8384f;     --hp-2:#ff9b86;   --xp:#35b94d;
+  --shadow:0 1px 2px rgba(74,48,28,.05),0 10px 24px -16px rgba(74,48,28,.32);
+  --font-d:'Chakra Petch','IBM Plex Sans Thai','Noto Sans Thai',system-ui,sans-serif;
+  --font-b:'IBM Plex Sans Thai','Noto Sans Thai',system-ui,sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#1b1917; --grid:transparent; --card:#252220; --sunk:#211e1c;
+  --ink:#f6ece4;   --ink-soft:#b3a79d; --line:#3a3530; --line-soft:#2c2825;
+  --accent:#ff8257; --accent-2:#8f4530; --accent-bg:#32201a;
+  --steel:#c492f0; --dim:#5fd97f;  --ok:#5fd97f;  --bad:#ff6b6b;
+  --hp:#ff5f6d;    --hp-2:#8c3340; --xp:#5fd97f;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 26px -18px rgba(0,0,0,.9);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#1b1917; --grid:transparent; --card:#252220; --sunk:#211e1c;
+  --ink:#f6ece4;   --ink-soft:#b3a79d; --line:#3a3530; --line-soft:#2c2825;
+  --accent:#ff8257; --accent-2:#8f4530; --accent-bg:#32201a;
+  --steel:#c492f0; --dim:#5fd97f;  --ok:#5fd97f;  --bad:#ff6b6b;
+  --hp:#ff5f6d;    --hp-2:#8c3340; --xp:#5fd97f;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 26px -18px rgba(0,0,0,.9);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper);color:var(--ink);font-family:var(--font-b);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 56px;
+}
+.wrap{max-width:780px;margin:0 auto}
+h1,h2,h3,.d{font-family:var(--font-d);text-wrap:balance;letter-spacing:.01em}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--steel)}
+
+/* ---------- ปุ่ม ---------- */
+button{
+  font-family:var(--font-d);font-size:.98rem;font-weight:600;cursor:pointer;border-radius:var(--r);
+  border:1px solid var(--line);background:var(--card);color:var(--ink);padding:.6rem 1.15rem;
+  transition:border-color .15s,background .15s,color .15s;
+}
+button:hover{border-color:var(--ink-soft)}
+button:focus-visible,input:focus-visible,select:focus-visible,label:focus-within{outline:2.5px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+button.primary:hover{filter:brightness(1.07)}
+button:disabled{opacity:.4;cursor:default;filter:none}
+
+/* ---------- หัวเรื่อง: ชื่อซ้าย ยศขวา จบในแถวเดียว ---------- */
+header{
+  display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center;justify-content:space-between;
+  padding-block:1.1rem .9rem;
+}
+.head-t{flex:1 1 240px}
+header .t{margin:0;font-size:1.55rem;font-weight:700;line-height:1.2;letter-spacing:-.01em}
+header .sub{color:var(--ink-soft);font-size:.84rem;line-height:1.5}
+.me{display:flex;flex-direction:column;gap:.25rem;align-items:flex-end}
+.me-id{display:flex;gap:.5rem;align-items:center}
+.me-txt b{display:block;font-family:var(--font-d);font-size:.98rem;line-height:1.25}
+.me-txt span{display:block;font-size:.72rem;color:var(--ink-soft)}
+.me-num{display:flex;gap:.35rem;font-size:.74rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.me-num .hot{color:var(--accent);font-weight:700}
+
+/* ---------- แผงสถานะใบเดียว: ระดับ · EXP · เลือด · ภารกิจ ----------
+   รวมทุกอย่างไว้ใบเดียวแทนที่จะเป็นสามการ์ดซ้อนกัน หน้าจะได้ไม่รก */
+/* แถบสถานะต้องเตี้ย เพราะถ้ามันสูง โจทย์จะถูกดันตกขอบจอ
+   แล้วเด็กต้องเลื่อนหน้าทุกครั้งที่ขึ้นข้อใหม่ ซึ่งกินใจความสนใจไปเปล่า ๆ */
+.panel{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:.5rem .75rem;box-shadow:var(--shadow);
+}
+.strip{display:flex;align-items:center;gap:.45rem .7rem;flex-wrap:wrap}
+.lvtag{font-family:var(--font-d);font-weight:700;font-size:.82rem;color:var(--ink-soft);
+  display:flex;align-items:baseline;gap:.3rem;flex:0 0 auto}
+.lvtag em{font-style:normal;color:var(--accent);font-size:1.25rem;line-height:1}
+.lvname{font-size:.78rem;color:var(--ink-soft);flex:1 1 90px;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bars{flex:1 1 190px;min-width:160px;display:flex;flex-direction:column;gap:3px}
+.pinfo{width:24px;height:24px;padding:0;flex:0 0 auto;border-radius:50%;
+  font-family:var(--font-d);font-weight:700;font-size:.78rem;line-height:1;
+  background:var(--sunk);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer}
+.pinfo:hover,.pinfo.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.panel-more{margin-top:.5rem;padding-top:.45rem;border-top:1px solid var(--line-soft);
+  display:flex;flex-direction:column;gap:.15rem}
+.panel-more b{font-family:var(--font-d);font-size:.86rem}
+.panel-more span{font-size:.76rem;color:var(--ink-soft);line-height:1.6}
+
+.brow{display:flex;align-items:center;gap:.4rem;margin-top:0}
+.bk{font-size:.62rem;letter-spacing:.04em;color:var(--ink-soft);width:26px;flex:0 0 auto;font-family:var(--font-d)}
+.bar{flex:1;height:7px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:99px;transition:width .4s ease}
+.bar.xp i{background:var(--xp)}
+.bar.hp i{width:100%;background:var(--hp)}
+.bv{font-size:.68rem;color:var(--ink-soft);font-variant-numeric:tabular-nums;flex:0 0 auto;min-width:52px;text-align:right}
+.bv b{color:var(--ink);font-family:var(--font-d)}
+#hpwrap.low .bar.hp i{background:var(--hp)}
+#hpwrap.crit .bar.hp i{animation:pulsehp 1s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){#hpwrap.crit .bar.hp i{animation:none}}
+
+.pass-note{font-size:.78rem;color:var(--ink-soft);margin-top:.4rem;line-height:1.5}
+.pass-note[hidden]{display:none}
+.pass-note.close{color:var(--accent);font-weight:700}
+
+/* ---------- บันไดระดับเป็นจุด ---------- */
+/* แถบด่าน — กดเลือกด่านได้เอง จุดทึบคือด่านประจำเลเวลตัวเอง วงรอบคือด่านที่กำลังเล่น */
+.ladder{display:flex;gap:.3rem;margin:0;padding:0;list-style:none}
+.ladder li{display:block}
+.ladder li button{
+  width:18px;height:18px;padding:0;border-radius:50%;background:var(--sunk);border:1px solid var(--line);
+  display:grid;place-items:center;font-size:.6rem;font-family:var(--font-d);color:var(--ink-soft);cursor:pointer;
+}
+.ladder li button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.ladder li.done button{background:var(--ok);border-color:var(--ok);color:#fff}
+.ladder li.now button{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.ladder li.sel button{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--accent)}
+.ladder li.lock button{opacity:.45;cursor:not-allowed}
+
+/* ---------- การ์ดโจทย์ ---------- */
+.card{box-shadow:var(--shadow);background:var(--card);border:1px solid var(--line);border-radius:18px;padding:1.3rem 1.35rem 1.25rem;margin-top:.9rem}
+/* แถวป้ายจะหายไปเองเมื่อไม่มีป้าย */
+.tagrow:empty{display:none}
+.tagrow{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem}
+.tag{
+  font-family:var(--font-d);font-size:.74rem;font-weight:600;letter-spacing:.03em;
+  padding:.18rem .62rem;border-radius:99px;border:1.5px solid var(--line);color:var(--ink-soft);
+}
+.tag.lv{border-color:var(--ink-soft);color:var(--ink)}
+.tag.rev{border-color:var(--steel);color:var(--steel)}
+.tag.sub{border-color:var(--dim);color:var(--dim)}
+.qtext{font-size:1.1rem;line-height:1.95}
+.qtext b{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ---------- แผ่นแบบสำหรับรูปคาน ---------- */
+.fig{
+  margin:1.1rem 0 .4rem;padding:.7rem .5rem .4rem;border:1.5px solid var(--line-soft);border-radius:12px;
+  background:var(--sunk);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:13px 13px;
+  display:flex;justify-content:center;overflow-x:auto;
+}
+
+/* ---------- ช่องคำตอบ ---------- */
+.fields{display:flex;flex-direction:column;gap:1rem;margin-top:1.2rem}
+.f{border-top:1px dashed var(--line);padding-top:.85rem}
+.f:first-child{border-top:0;padding-top:0}
+.f > label{display:block;font-family:var(--font-d);font-weight:600;font-size:.98rem;margin-bottom:.45rem}
+.f input[type=text]{
+  font-family:var(--font-d);font-size:1.35rem;font-weight:600;padding:.4rem .7rem;width:150px;
+  border-radius:var(--r);border:1.5px solid var(--line);background:var(--sunk);color:var(--ink);
+  font-variant-numeric:tabular-nums;
+}
+.f input[type=text]:focus{background:var(--card)}
+.f select{
+  font-family:var(--font-b);font-size:1rem;padding:.5rem .7rem;border-radius:var(--r);
+  border:1.5px solid var(--line);background:var(--sunk);color:var(--ink);max-width:100%;
+}
+.row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.units{display:flex;flex-wrap:wrap;gap:.3rem}
+.units input{position:absolute;opacity:0;width:1px;height:1px}
+.units label{
+  display:inline-block;font-family:var(--font-d);font-size:.92rem;padding:.4rem .7rem;cursor:pointer;
+  border:1.5px solid var(--line);border-radius:99px;color:var(--ink-soft);background:var(--card);
+  transition:border-color .12s,color .12s,background .12s;
+}
+.units label:hover{border-color:var(--ink-soft);color:var(--ink)}
+.units input:checked + label{border-color:var(--accent);background:var(--accent-bg);color:var(--accent)}
+.units input:focus-visible + label{outline:2.5px solid var(--accent);outline-offset:2px}
+.acts{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.25rem;align-items:center}
+.acts .sp{flex:1}
+
+/* ---------- ฟีดแบ็ก ---------- */
+.fb{margin-top:1.1rem;border-radius:12px;padding:.95rem 1.1rem;background:var(--sunk);
+  border:1.5px solid var(--line);border-left-width:5px}
+.fb.good{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,transparent)}
+.fb.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 7%,transparent)}
+.fb .h{font-family:var(--font-d);font-weight:700;font-size:1.02rem;margin-bottom:.15rem}
+.fb.good .h{color:var(--ok)} .fb.bad .h{color:var(--bad)}
+.fb .ans{font-family:var(--font-d);font-weight:600;font-variant-numeric:tabular-nums}
+.fb .ansbox{display:inline-block;margin-top:.35rem;padding:.3rem .75rem;border-radius:var(--r);
+  background:var(--card);border:1.5px solid var(--line)}
+.fb .up{margin-top:.7rem;font-family:var(--font-d);font-weight:700;color:var(--ok)}
+.fb .tip{margin-top:.6rem;font-size:.94rem}
+.steps{list-style:none;counter-reset:s;margin:.75rem 0 0;padding:0}
+.steps li{counter-increment:s;position:relative;padding-left:1.9rem;margin-bottom:.35rem;font-size:.97rem;line-height:1.7}
+.steps li::before{
+  content:counter(s);position:absolute;left:0;top:.28rem;width:1.35rem;height:1.35rem;border-radius:50%;
+  border:1.5px solid var(--ink-soft);color:var(--ink-soft);font-family:var(--font-d);font-size:.76rem;
+  display:flex;align-items:center;justify-content:center;
+}
+.hints{margin-top:.95rem;border-left:4px solid var(--accent-2);background:var(--sunk);
+  border-radius:0 var(--r) var(--r) 0;padding:.5rem .85rem;font-size:.96rem}
+.hints p{margin:.2rem 0}
+.hints b{font-family:var(--font-d);color:var(--accent)}
+.steps4{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:1.1rem;padding-top:.9rem;
+  border-top:1px dashed var(--line);font-size:.73rem;color:var(--ink-soft)}
+.steps4 span{border:1px solid var(--line-soft);border-radius:6px;padding:.12rem .5rem;background:var(--sunk)}
+
+/* ---------- ท้ายหน้า ---------- */
+footer{margin-top:1.8rem;padding-top:1rem;border-top:1px solid var(--line);
+  font-size:.8rem;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:.8rem;align-items:center}
+footer .sp{flex:1}
+footer button{font-size:.78rem;padding:.32rem .75rem;font-weight:500}
+footer .site{color:var(--steel);text-decoration:none;font-family:var(--font-d);font-weight:600}
+footer .site:hover{text-decoration:underline}
+
+@media (max-width:430px){
+  header .t{font-size:1.2rem}
+  /* บนจอมือถือ คำโปรยใต้ชื่อเรื่องกินที่เท่ากับโจทย์หนึ่งบรรทัดครึ่ง
+     และอ่านรอบเดียวก็พอ จึงซ่อนไว้เพื่อให้โจทย์ขึ้นมาอยู่ในจอตั้งแต่เปิด */
+  header .sub{display:none}
+  .chip{min-width:66px;padding:.3rem .6rem}
+  .chip b{font-size:1.08rem}
+  .card{padding:1.05rem 1rem}
+  .qtext{font-size:1.04rem;line-height:1.85}
+  .ladder li button{width:18px;height:18px;font-size:.6rem}
+  .panel{padding:.45rem .65rem}
+  .lvtag em{font-size:1.2rem}
+  .lvname{flex-basis:100%;order:3}
+  .bars{flex-basis:100%}
+}
+/* ---------- รูปคาน (ข้อตกลงการวาดเดียวกับเล่มเรียน) ---------- */
+:root{--f-beam:#f0e3cd; --f-beam-s:#3a332c; --f-ful:#a89a8c; --f-ful-s:#5d5146; --f-box:#f0e2fb;
+  --f-box-s:#7a3fae; --f-dim:#1f8a4d; --f-for:#e0562c; --f-ink:#2b2621; --f-soft:#7b6a5d; --f-bg:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --f-beam:#6b5a41; --f-beam-s:#cfc3ae; --f-ful:#6b6058; --f-ful-s:#bdb0a3; --f-box:#4a3560;
+  --f-box-s:#d7b7f4; --f-dim:#6edb8e; --f-for:#ff8a5c; --f-ink:#f0e7de; --f-soft:#b6a496; --f-bg:#1a1511}}
+:root[data-theme="dark"]{
+  --f-beam:#6b5a41; --f-beam-s:#cfc3ae; --f-ful:#6b6058; --f-ful-s:#bdb0a3; --f-box:#4a3560;
+  --f-box-s:#d7b7f4; --f-dim:#6edb8e; --f-for:#ff8a5c; --f-ink:#f0e7de; --f-soft:#b6a496; --f-bg:#1a1511}
+.fig{margin:1rem 0 .2rem;display:flex;justify-content:center;overflow-x:auto}
+.figsvg{width:100%;max-width:400px;height:auto;display:block;margin:0 auto}
+.figsvg text{font-family:var(--font-b)}
+.ft{fill:var(--f-ink)} .fts{fill:var(--f-soft)} .fdt{fill:var(--f-dim)} .ff2{fill:var(--f-for)}
+.fbt{fill:var(--f-ink)}
+.fbeam{fill:var(--f-beam);stroke:var(--f-beam-s);stroke-width:1.4}
+.fful{fill:var(--f-ful);stroke:var(--f-ful-s);stroke-width:1.2}
+.fbox{fill:var(--f-box);stroke:var(--f-box-s);stroke-width:1.2}
+.fkl{stroke:var(--f-ink);stroke-width:1.1;fill:none}
+.fkl2{stroke:var(--f-ink);stroke-width:1.8;fill:none}
+.fh{stroke:var(--f-soft);stroke-width:1}
+.fdl{stroke:var(--f-dim);stroke-width:1.1;fill:none}
+.fd{fill:var(--f-dim)}
+.ffl{stroke:var(--f-for);stroke-width:1.8;fill:none}
+.ff{fill:var(--f-for)}
+.fk{fill:var(--f-ink)}
+.fdot{fill:var(--f-bg);stroke:var(--f-ink);stroke-width:1.5}
+.fdash{stroke:var(--f-soft);stroke-width:1.1;stroke-dasharray:5 4;fill:none}
+.fper{stroke:var(--f-soft);stroke-width:1.5;fill:none}
+
+/* ---------- หน้ารวมและหน้าระดับชั้น ---------- */
+.crumb{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding-block:1.1rem .1rem;font-size:.84rem;color:var(--ink-soft)}
+.crumb a{color:var(--steel);text-decoration:none;font-family:var(--font-d);font-weight:600}
+.crumb a:hover{text-decoration:underline}
+.crumb span[aria-hidden]{opacity:.45}
+.hero{padding-block:1.7rem .3rem}
+.hero h1{margin:0 0 .5rem;font-size:2rem;line-height:1.15}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{margin:0;color:var(--ink-soft);max-width:58ch;font-size:1.02rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:.85rem;margin-top:1rem}
+.card-link{
+  display:flex;flex-direction:column;text-decoration:none;color:inherit;background:var(--card);
+  border:1.5px solid var(--line);border-radius:14px;padding:1.1rem 1.15rem;
+  transition:border-color .15s,transform .15s;
+}
+.card-link:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card-link h3{margin:0 0 .3rem;font-size:1.15rem;line-height:1.3}
+.card-link p{margin:0;font-size:.92rem;color:var(--ink-soft);line-height:1.6;flex:1}
+.card-link .go{display:inline-block;margin-top:.85rem;font-family:var(--font-d);font-weight:700;
+  font-size:.9rem;color:var(--accent)}
+.card-soon{background:transparent;border-style:dashed;opacity:.7}
+.card-soon:hover{border-color:var(--line);transform:none}
+.soon{display:inline-block;margin-top:.85rem;font-size:.76rem;color:var(--ink-soft);
+  border:1.5px solid var(--line);border-radius:99px;padding:.1rem .6rem;align-self:flex-start}
+.grade-head{display:flex;flex-wrap:wrap;gap:.3rem .9rem;align-items:baseline;margin-top:2.1rem;
+  padding-bottom:.5rem;border-bottom:1.5px solid var(--line)}
+.grade-head h2{margin:0;font-size:1.3rem}
+.grade-head h2 a{text-decoration:none;color:var(--ink)}
+.grade-head h2 a:hover{color:var(--accent)}
+.grade-head .n{font-size:.84rem;color:var(--ink-soft)}
+.empty{margin-top:.85rem;border:1.5px dashed var(--line);border-radius:12px;padding:1rem;
+  color:var(--ink-soft);font-size:.92rem}
+.howto{margin-top:2.4rem;background:var(--card);border:1.5px solid var(--line);border-radius:14px;
+  padding:1.2rem 1.3rem;color:var(--ink-soft);font-size:.95rem}
+.howto h2{margin:0 0 .6rem;font-size:1.08rem;color:var(--ink)}
+.howto ol{margin:.3rem 0;padding-left:1.4rem}
+.howto ol li{margin-bottom:.25rem}
+.howto p{margin:.8rem 0 0}
+
+/* ---------- แถบยศ ---------- */
+.rankband{margin-top:1rem}
+.rk{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:.9rem 1.15rem 1rem;
+  display:flex;gap:.85rem;align-items:center}
+.rk-main{flex:1;min-width:0}
+.rk-row{display:flex;flex-wrap:wrap;gap:.2rem .8rem;align-items:baseline;justify-content:space-between}
+.rk-name{font-family:var(--font-d);font-weight:700;font-size:1.3rem;line-height:1.25;color:var(--accent)}
+.rk-sc{font-size:.82rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.rk-sc b{color:var(--ink);font-family:var(--font-d)}
+.rk-bar{height:9px;border-radius:99px;background:var(--sunk);border:1.5px solid var(--line);overflow:hidden;margin:.5rem 0 .4rem}
+.rk-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));transition:width .5s ease}
+.rk-next{font-size:.79rem;color:var(--ink-soft)}
+.fb .why{font-size:.82rem;color:var(--ink-soft);margin-bottom:.1rem}
+.rk-topics{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem;font-size:.78rem;color:var(--ink-soft)}
+.rk-topics span{border:1px solid var(--line);border-radius:99px;padding:.1rem .6rem;background:var(--sunk)}
+.card-prog{margin-top:.5rem;font-size:.8rem;color:var(--accent);font-family:var(--font-d);font-weight:600}
+@media (prefers-reduced-motion:reduce){.rk-bar i{transition:none}}
+
+/* ─────────────────────────────────────────────────────────────
+   ส่งผลให้ครู (ในหน้าเกม) + หน้าสรุปผลครู
+   ───────────────────────────────────────────────────────────── */
+.sharebox{
+  margin-top:1.1rem;background:var(--card);border:1.5px solid var(--accent);border-radius:14px;
+  padding:1rem 1.1rem 1.1rem;box-shadow:0 2px 0 var(--line-soft);
+}
+.sh-head{display:flex;align-items:center;gap:.6rem;font-family:var(--font-d);margin-bottom:.6rem}
+.sh-head b{font-size:1.06rem}
+.sh-x{margin-left:auto;font-size:.78rem;padding:.28rem .7rem;font-weight:500}
+.sh-row{display:flex;flex-wrap:wrap;gap:.45rem .7rem;align-items:center;font-size:.9rem;color:var(--ink-soft)}
+.sh-row input{
+  flex:1 1 220px;font:inherit;font-size:.95rem;color:var(--ink);background:var(--sunk);
+  border:1.5px solid var(--line);border-radius:9px;padding:.45rem .7rem;
+}
+.sharebox textarea{
+  width:100%;margin-top:.7rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;
+  line-height:1.5;color:var(--ink);background:var(--sunk);border:1.5px solid var(--line);
+  border-radius:9px;padding:.55rem .7rem;resize:vertical;word-break:break-all;
+}
+.sh-act{display:flex;flex-wrap:wrap;gap:.6rem .9rem;align-items:center;margin-top:.6rem}
+.sh-act .go{
+  font-family:var(--font-d);font-weight:700;background:var(--accent);border-color:var(--accent);color:#fff;
+}
+.sh-msg{font-size:.85rem;color:var(--ok);font-weight:600}
+.sh-note{margin:.7rem 0 0;font-size:.84rem;color:var(--ink-soft);line-height:1.6}
+
+.wrap.wide{max-width:1040px}
+
+.teachlink{
+  display:block;margin:1rem 0 .4rem;padding:.85rem 1.05rem;text-decoration:none;color:var(--ink);
+  background:var(--card);border:1.5px solid var(--line);border-left:5px solid var(--steel);border-radius:12px;
+}
+.teachlink:hover{border-color:var(--steel)}
+.teachlink b{display:block;font-family:var(--font-d);color:var(--steel)}
+.teachlink span{font-size:.88rem;color:var(--ink-soft)}
+
+.pastebox{
+  margin-top:1.1rem;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:1rem 1.1rem;
+}
+.pastebox label{display:block;font-family:var(--font-d);font-weight:600;font-size:.92rem;margin-bottom:.45rem}
+.pastebox textarea{
+  width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;line-height:1.55;
+  color:var(--ink);background:var(--sunk);border:1.5px solid var(--line);border-radius:9px;
+  padding:.55rem .7rem;resize:vertical;
+}
+.pact{display:flex;flex-wrap:wrap;gap:.6rem .9rem;align-items:center;margin-top:.7rem}
+.pact .go{font-family:var(--font-d);font-weight:700;background:var(--accent);border-color:var(--accent);color:#fff}
+.pact .sh-msg{color:var(--ink-soft);font-weight:500}
+
+/* สรุปชั้นเรียน */
+.sum{margin-top:1.2rem}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.7rem}
+.st{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:.75rem .9rem}
+.st .k{display:block;font-size:.82rem;color:var(--ink-soft)}
+.st .v{display:block;font-family:var(--font-d);font-size:1.5rem;line-height:1.25;font-variant-numeric:tabular-nums}
+.st .n{display:block;font-size:.78rem;color:var(--ink-soft)}
+
+.hist{margin-top:.8rem;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:.85rem 1rem}
+.hist-h{font-family:var(--font-d);font-weight:600;font-size:.95rem;margin-bottom:.55rem}
+.hbs{display:flex;gap:.4rem;align-items:flex-end;height:96px}
+.hb{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:.2rem}
+.hb i{display:block;width:100%;background:var(--line);border-radius:4px 4px 0 0;min-height:2px}
+.hb.hot i{background:var(--accent)}
+.hb b{font-family:var(--font-d);font-size:.8rem;color:var(--ink-soft)}
+.hb span{font-size:.76rem;color:var(--ink-soft);font-variant-numeric:tabular-nums;line-height:1}
+.hb.hot span{color:var(--accent);font-weight:700}
+.hb.hot b{color:var(--accent)}
+.hist-n{margin-top:.6rem;font-size:.88rem;color:var(--ink-soft);line-height:1.6}
+.hist-n b{color:var(--ink)}
+
+/* แถบเครื่องมือ */
+.tools{display:flex;flex-wrap:wrap;gap:.55rem .8rem;align-items:center;margin-top:1.3rem}
+.tools .sp{flex:1}
+.tools label{font-size:.85rem;color:var(--ink-soft);display:flex;align-items:center;gap:.4rem}
+.tools select,.tools input{
+  font:inherit;font-size:.9rem;color:var(--ink);background:var(--card);
+  border:1.5px solid var(--line);border-radius:9px;padding:.35rem .6rem;
+}
+.tools button{font-size:.84rem;padding:.4rem .85rem;font-weight:500}
+
+/* ตาราง */
+.tbox{margin-top:.7rem;overflow-x:auto;background:var(--card);border:1.5px solid var(--line);border-radius:12px}
+.tt{border-collapse:collapse;width:100%;font-size:.92rem}
+.tt th,.tt td{text-align:left;padding:.5rem .7rem;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+.tt thead th{
+  font-family:var(--font-d);font-size:.84rem;color:var(--ink-soft);background:var(--sunk);
+  cursor:pointer;user-select:none;position:sticky;top:0;
+}
+.tt thead th.on{color:var(--accent)}
+.tt thead th.on::after{content:'▾';margin-left:.3rem}
+.tt thead th.on.up::after{content:'▴'}
+.tt tbody tr:hover{background:var(--sunk)}
+.tt tbody tr:last-child td{border-bottom:0}
+.tt td.num{font-variant-numeric:tabular-nums}
+.tt td.small{font-size:.84rem;color:var(--ink-soft)}
+.tt td .of{color:var(--ink-soft);font-size:.82rem}
+.tt td.who b{display:block;font-family:var(--font-d)}
+.tt td.who .rkname{display:block;font-size:.78rem;color:var(--dim)}
+.tt td.who .warn{
+  display:inline-block;margin-top:.15rem;font-size:.72rem;color:var(--bad);
+  border:1px solid var(--bad);border-radius:5px;padding:0 .3rem;
+}
+.tt tr.suspect td{background:color-mix(in srgb,var(--bad) 7%,transparent)}
+.tt button.del{border:0;background:none;color:var(--ink-soft);padding:.2rem .35rem;font-size:.9rem}
+.tt button.del:hover{color:var(--bad)}
+
+.lvcells{display:flex;gap:2px;align-items:flex-end;height:30px}
+.lvcells i{
+  display:block;width:11px;height:100%;background:var(--line-soft);border-radius:2px;
+  display:flex;align-items:flex-end;
+}
+.lvcells i span{display:block;width:100%;background:var(--line);border-radius:2px}
+.lvcells i.c-done span{background:var(--ok)}
+.lvcells i.c-now span{background:var(--accent)}
+.lvcells i.c-part span{background:var(--accent-2)}
+.lvcells i.c-none span{background:var(--line)}
+.lvcells i.c-now{outline:1.5px solid var(--accent);outline-offset:1px}
+
+@media (max-width:560px){
+  .hbs{height:76px}
+  .tt th,.tt td{padding:.45rem .5rem}
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ชั้นแรงจูงใจ: ภารกิจวันนี้ · ข้อทอง · บัตรความรู้ · เกือบผ่าน
+   ───────────────────────────────────────────────────────────── */
+.quest{
+  margin-top:.5rem;background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:.4rem .6rem;border-left:4px solid var(--steel);
+}
+.quest:not(.pick){display:flex;align-items:center;gap:.5rem}
+.quest:not(.pick) .q-bar{flex:1;margin:0}
+.quest:not(.pick) .q-name{flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quest:empty{display:none}
+.quest.done{border-left-color:var(--ok)}
+.q-h{font-family:var(--font-d);font-weight:700;font-size:.84rem;margin-bottom:.35rem}
+.q-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.35rem}
+.q-opts button{
+  display:flex;align-items:center;gap:.4rem;text-align:left;
+  padding:.35rem .55rem;line-height:1.35;
+}
+.q-opts button .qico{flex:0 0 auto;width:1em;height:1em;margin:0}
+.q-opts button b{font-size:.8rem;font-weight:600;flex:1 1 auto}
+.q-opts button span{font-size:.76rem;color:var(--accent);font-family:var(--font-d);font-weight:700;flex:0 0 auto}
+.q-opts button:hover{border-color:var(--steel)}
+.q-row{display:flex;flex-wrap:wrap;gap:.3rem .8rem;align-items:baseline}
+.q-name{font-family:var(--font-d);font-weight:700;font-size:.84rem}
+.q-pts{margin-left:auto;font-family:var(--font-d);font-weight:700;font-size:.85rem;color:var(--accent)}
+.quest.done .q-pts{color:var(--ok)}
+.q-bar{height:6px;border-radius:4px;background:var(--sunk);border:1px solid var(--line-soft);margin:.4rem 0 .3rem;overflow:hidden}
+.q-bar i{display:block;height:100%;background:var(--steel);transition:width .35s ease}
+.quest.done .q-bar i{background:var(--ok)}
+.q-n{font-size:.82rem;color:var(--ink-soft)}
+
+.goldbar{
+  margin-bottom:.5rem;padding:.45rem .8rem;border-radius:9px;font-family:var(--font-d);font-weight:700;
+  color:#7a4a00;background:linear-gradient(90deg,#ffd77a,#ffeab8);border:1.5px solid #e0a52e;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .goldbar{color:#ffdf9b;background:linear-gradient(90deg,#4a3a10,#2f2409);border-color:#8a6a1e}}
+:root[data-theme="dark"] .goldbar{color:#ffdf9b;background:linear-gradient(90deg,#4a3a10,#2f2409);border-color:#8a6a1e}
+
+.cardwon{
+  margin-top:.6rem;padding:.6rem .8rem;border-radius:10px;background:var(--sunk);
+  border:1.5px dashed var(--dim);display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;
+}
+.cw-art{flex:0 0 130px;max-width:130px}
+.cw-art .cdart{margin:0}
+.cardwon>div:last-child{flex:1 1 200px}
+.cardwon span{font-size:.8rem;color:var(--dim);font-family:var(--font-d);font-weight:700}
+.cardwon h4{margin:.1rem 0 .15rem;font-family:var(--font-d);font-size:1rem}
+.cardwon p{margin:0;font-size:.88rem;color:var(--ink-soft);line-height:1.6}
+
+.cardbox{margin-top:1rem}
+.cardbox:empty{display:none}
+.cardbox summary{
+  display:flex;flex-wrap:wrap;gap:.2rem .7rem;align-items:baseline;cursor:pointer;
+  background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:.55rem .9rem;
+  list-style:none;
+}
+.cardbox summary::-webkit-details-marker{display:none}
+.cardbox summary::after{content:'▸';margin-left:auto;color:var(--ink-soft)}
+.cardbox details[open] summary::after{content:'▾'}
+.cardbox summary:hover{border-color:var(--dim)}
+.cardbox summary b{font-family:var(--font-d);font-size:.95rem}
+.cardbox summary span{font-size:.82rem;color:var(--ink-soft)}
+.cardbox details[open] summary{margin-bottom:.55rem}
+.cd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.55rem}
+.cd{
+  position:relative;background:var(--sunk);border:1.5px dashed var(--line);border-radius:11px;
+  padding:.6rem .7rem .65rem;min-height:92px;
+}
+.cd b{
+  position:absolute;top:.45rem;right:.55rem;font-family:var(--font-d);font-size:.78rem;
+  color:var(--ink-soft);opacity:.7;
+}
+.cd h4{margin:0 0 .2rem;font-family:var(--font-d);font-size:.92rem;color:var(--ink-soft)}
+.cd p{margin:0;font-size:.8rem;line-height:1.55;color:var(--ink-soft);opacity:.75}
+.cd.on{background:var(--card);border-style:solid;border-color:var(--dim)}
+.cd.on h4{color:var(--ink)}
+.cd.on p{opacity:1}
+.cd.on b{color:var(--dim);opacity:1}
+
+.pass-note.close{color:var(--accent);font-weight:700}
+.scale.close .scale-beam{animation:nudge 1.1s ease-in-out infinite}
+@keyframes nudge{0%,100%{filter:none}50%{filter:drop-shadow(0 0 6px var(--accent))}}
+@media (prefers-reduced-motion:reduce){.scale.close .scale-beam{animation:none}}
+
+/* เป้าแต้มรวมของห้อง (หน้าครู) */
+.goal{background:var(--card);border:1.5px solid var(--line);border-left:5px solid var(--accent);
+  border-radius:12px;padding:.8rem 1rem;margin-bottom:.8rem}
+.goal-row{display:flex;flex-wrap:wrap;gap:.3rem .8rem;align-items:baseline}
+.goal-row b{font-family:var(--font-d);font-size:1rem}
+.goal-v{margin-left:auto;font-family:var(--font-d);font-weight:700;font-variant-numeric:tabular-nums}
+.goal-v input{width:7ch;font:inherit;color:var(--ink);background:var(--sunk);
+  border:1.5px solid var(--line);border-radius:7px;padding:.1rem .35rem;text-align:right}
+.goal-bar{height:12px;border-radius:7px;background:var(--sunk);border:1px solid var(--line-soft);
+  margin:.55rem 0 .35rem;overflow:hidden}
+.goal-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));transition:width .4s ease}
+.goal-n{font-size:.85rem;color:var(--ink-soft)}
+
+/* ─────────────────────────────────────────────────────────────
+   ภาพประกอบ SVG: ตรายศ · รูปบนบัตร · ไอคอน · ภาพเปิดหน้ารวม
+   สีมาจากชุดเดียวกับรูปคานในโจทย์ เด็กจึงอ่านภาพได้ด้วยกติกาเดิม
+   ───────────────────────────────────────────────────────────── */
+.badge{width:46px;height:46px;flex:0 0 auto;display:block}
+.bd-bg{fill:var(--sunk)}
+.bd-ed{fill:none;stroke:var(--line);stroke-width:2}
+.badge.t1 .bd-ed,.badge.t2 .bd-ed{stroke:var(--steel)}
+.badge.t3 .bd-ed,.badge.t4 .bd-ed{stroke:var(--dim)}
+.badge.t5 .bd-ed{stroke:var(--accent)}
+.badge.t6 .bd-ed{stroke:#d9a21b;stroke-width:2.4}
+.badge.t1 .bd-bg,.badge.t2 .bd-bg{fill:color-mix(in srgb,var(--steel) 10%,var(--sunk))}
+.badge.t3 .bd-bg,.badge.t4 .bd-bg{fill:color-mix(in srgb,var(--dim) 12%,var(--sunk))}
+.badge.t5 .bd-bg{fill:color-mix(in srgb,var(--accent) 12%,var(--sunk))}
+.badge.t6 .bd-bg{fill:color-mix(in srgb,#d9a21b 18%,var(--sunk))}
+.bd-st{fill:#d9a21b}
+.badge.sm{width:30px;height:30px}
+
+.qico{width:1.05em;height:1.05em;vertical-align:-.16em;margin-right:.3rem;flex:0 0 auto}
+.i-l{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.i-f{fill:currentColor}
+.qico.gold{color:#d9a21b;width:1.2em;height:1.2em}
+
+.cdart{width:100%;height:auto;display:block;margin:.1rem 0 .4rem}
+.cd .cdart{opacity:.17}        /* ใบที่ยังไม่ได้ เห็นเงารูปราง ๆ ไว้ให้อยากเปิด */
+.cd.on .cdart{opacity:1}
+
+.heroart{width:100%;max-width:440px;height:auto;display:block;margin:.9rem 0 .2rem}
+.h-grid{fill:var(--sunk)}
+.h-step{fill:var(--line-soft)}
+.h-step.on{fill:var(--accent-2)}
+.h-spark{fill:var(--accent)}
+
+
+.hero-art{display:flex;flex-wrap:wrap;gap:.8rem 1.6rem;align-items:center}
+.hero-art>div:first-child{flex:1 1 300px}
+.hero-art #heroart{flex:1 1 300px;max-width:440px}
+
+/* ─────────────────────────────────────────────────────────────
+   ระบบไต่เลเวลแบบเกม: หลอดเลือด · บรรทัด EXP · ข้อเลือกตอบ · กล่องสถานการณ์
+   ───────────────────────────────────────────────────────────── */
+.hp{display:flex;align-items:center;gap:.5rem;margin-top:.7rem}
+.hp-k{font-size:.78rem;color:var(--ink-soft);font-family:var(--font-d);font-weight:600}
+.hp-bar{flex:1;height:10px;border-radius:99px;background:var(--sunk);border:1.5px solid var(--line);overflow:hidden}
+.hp-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--hp-2),var(--hp));transition:width .35s ease}
+.hp-v{font-size:.78rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.hp-v b{color:var(--ink);font-family:var(--font-d)}
+.hp.low .hp-bar{border-color:var(--hp)}
+.hp.crit .hp-bar i{animation:pulsehp 1s ease-in-out infinite}
+@keyframes pulsehp{0%,100%{opacity:1}50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.hp.crit .hp-bar i{animation:none}}
+.downs{font-size:.76rem;color:var(--ink-soft);margin-top:.25rem}
+.downs:empty{display:none}
+
+.statline{display:flex;flex-wrap:wrap;gap:.4rem;margin:.35rem 0 .1rem;font-family:var(--font-d);font-size:.84rem;font-weight:700}
+.statline span{border-radius:99px;padding:.08rem .6rem;border:1.5px solid currentColor}
+.st-xp{color:var(--xp)}
+.st-hp{color:var(--ok)}
+.st-dm{color:var(--hp)}
+.st-left{color:var(--ink-soft);font-weight:500}
+
+.down{
+  margin-top:.6rem;padding:.6rem .85rem;border-radius:10px;font-family:var(--font-d);font-weight:700;
+  color:#fff;background:linear-gradient(90deg,var(--hp-2),var(--hp));
+}
+
+.scene{
+  margin:0 0 .8rem;padding:.7rem .9rem;border-radius:11px;background:var(--sunk);
+  border:1.5px solid var(--line-soft);border-left:4px solid var(--steel);
+  font-size:.95rem;line-height:1.75;color:var(--ink-soft);
+}
+.scene b{color:var(--ink)}
+
+.choices{display:flex;flex-direction:column;gap:.5rem;margin-top:.9rem}
+.ch{
+  display:flex;gap:.65rem;align-items:flex-start;cursor:pointer;
+  border:1.5px solid var(--line);border-radius:11px;padding:.6rem .8rem;background:var(--sunk);
+  line-height:1.65;transition:border-color .15s,background .15s;
+}
+.ch:hover{border-color:var(--steel)}
+.ch input{position:absolute;opacity:0;width:0;height:0}
+.ch-k{
+  flex:0 0 26px;height:26px;border-radius:50%;border:1.5px solid var(--line);
+  display:grid;place-items:center;font-family:var(--font-d);font-weight:700;font-size:.86rem;
+  color:var(--ink-soft);background:var(--card);
+}
+.ch-t{flex:1;font-size:.95rem}
+.ch:has(input:checked){border-color:var(--accent);background:var(--accent-bg)}
+.ch:has(input:checked) .ch-k{background:var(--accent);border-color:var(--accent);color:#fff}
+.ch:has(input:focus-visible){outline:2.5px solid var(--accent);outline-offset:2px}
+
+/* ─────────────────────────────────────────────────────────────
+   ยุบให้เหลือน้อยชิ้น: ภารกิจเป็นแถบเดียวในแผงสถานะ
+   ───────────────────────────────────────────────────────────── */
+.quest{
+  display:flex;align-items:center;gap:.5rem;margin:.85rem 0 0;padding:.5rem .7rem;
+  background:var(--sunk);border:0;border-radius:12px;color:var(--ink-soft);font-size:.82rem;
+}
+.quest .qico{color:var(--steel);margin:0}
+.q-name{font-family:var(--font-d);font-weight:600;color:var(--ink);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;max-width:46%}
+.quest .q-bar{flex:1;height:6px;margin:0;border:0;border-radius:99px;background:var(--line-soft);overflow:hidden}
+.quest .q-bar i{display:block;height:100%;background:var(--steel);border-radius:99px;transition:width .35s ease}
+.q-v{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:.76rem}
+.quest.done{background:color-mix(in srgb,var(--ok) 12%,var(--sunk))}
+.quest.done .q-bar i{background:var(--ok)}
+.quest.done .q-v{color:var(--ok);font-weight:700}
+
+.quest.pick{display:block;background:var(--sunk);padding:.7rem .8rem .75rem}
+.quest.pick .q-h{font-family:var(--font-d);font-weight:700;font-size:.88rem;color:var(--ink);margin-bottom:.5rem}
+.quest.pick .q-opts{display:flex;flex-wrap:wrap;gap:.4rem}
+.quest.pick .q-opts button{
+  flex:1 1 170px;display:flex;align-items:center;gap:.4rem;text-align:left;
+  padding:.45rem .65rem;font-size:.84rem;font-weight:500;background:var(--card);border-radius:10px;
+}
+.quest.pick .q-opts button b{font-weight:600;flex:1;font-size:.84rem}
+.quest.pick .q-opts button span{color:var(--accent);font-family:var(--font-d);font-weight:700;font-size:.78rem}
+.quest.pick .q-opts button:hover{border-color:var(--steel)}
+.quest.pick .q-opts .qico{color:var(--steel)}
+
+/* เส้นขอบบางลงทั้งหน้า ให้ดูโล่ง */
+.cardbox summary,.pastebox,.goal,.st,.hist,.tbox,.teachlink,.card-link,.howto,.rk,.sharebox,.scene,.ch,.cd{
+  border-width:1px;
+}
+.fig{margin:.9rem 0 .1rem;background:var(--sunk);border-radius:14px;padding:.6rem .4rem}
+.downs{margin-top:.3rem}
+
+/* ─── กระดานทด + เครื่องคิดเลข ───────────────────────────────
+   ปุ่มลอยสองปุ่มมุมขวาล่าง แผ่นเครื่องมือลอยอยู่เหนือปุ่ม
+   ใช้สีและเส้นชุดเดียวกับการ์ดโจทย์ จึงไม่รู้สึกว่าเป็นของแปลกปลอม */
+body.has-kt{padding-bottom:104px}
+.kt-dock{position:fixed;right:16px;bottom:16px;z-index:70;display:flex;flex-direction:column;gap:10px}
+.kt-fab{width:50px;height:50px;padding:0;border-radius:50%;display:grid;place-items:center;
+  background:var(--card);border:1px solid var(--line);color:var(--accent);box-shadow:var(--shadow);cursor:pointer}
+.kt-fab svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.kt-fab:hover{border-color:var(--accent)}
+.kt-fab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.kt-panel{position:fixed;right:16px;bottom:80px;z-index:69;
+  width:min(360px,calc(100vw - 32px));background:var(--card);
+  border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.kt-head{display:flex;align-items:center;gap:8px;padding:.5rem .55rem .5rem .8rem;
+  border-bottom:1px solid var(--line-soft);background:var(--sunk)}
+.kt-title{font-family:var(--font-d);font-size:.95rem}
+.kt-act{margin-left:auto;display:flex;gap:4px}
+.kt-tb,.kt-close{width:32px;height:32px;padding:0;display:grid;place-items:center;cursor:pointer;
+  background:transparent;border:1px solid transparent;border-radius:8px;color:var(--ink-soft)}
+.kt-tb svg,.kt-close svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.kt-tb:hover,.kt-close:hover{background:var(--card);border-color:var(--line);color:var(--ink)}
+.kt-tb.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+.kt-body{padding:.6rem}
+#kt-cv{display:block;width:100%;height:min(46vh,300px);
+  background:var(--sunk);border:1px dashed var(--line);border-radius:10px;
+  touch-action:none;cursor:crosshair}
+.kt-out{width:100%;margin:0 0 .5rem;padding:.5rem .7rem;text-align:right;
+  font-family:var(--font-d);font-size:1.4rem;letter-spacing:.01em;
+  background:var(--sunk);color:var(--ink);border:1px solid var(--line);border-radius:10px}
+.kt-out.bad{border-color:var(--bad);color:var(--bad)}
+.kt-keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.kt-keys button{height:44px;padding:0;font-family:var(--font-d);font-size:1.05rem;
+  background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--ink);cursor:pointer}
+.kt-keys button:hover{border-color:var(--accent);color:var(--accent)}
+.kt-keys .op{color:var(--steel)}
+.kt-keys .eq{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.kt-keys .eq:hover{color:#fff;filter:brightness(1.06)}
+.kt-keys .wide4{grid-column:span 4}
+@media (max-width:430px){
+  .kt-panel{right:8px;left:8px;width:auto;bottom:76px}
+  .kt-dock{right:10px;bottom:10px;flex-direction:row}
+  .kt-fab{width:46px;height:46px}
+}

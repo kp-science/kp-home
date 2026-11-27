@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>สรุปผลนักเรียน · KP Science</title>
+<meta name="description" content="ครูวางรหัสผลที่นักเรียนส่งมา แล้วดูว่าใครอยู่ระดับไหน ห้องนี้ค้างระดับใดกันมากที่สุด">
+<meta name="author" content="ครูโกเมน · KP Science">
+<meta name="theme-color" content="#fffcf9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b1917" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://www.kpscience.com/drill/teacher/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%23101a2b%22%2F%3E%3Cg%20transform%3D%22rotate(-8%2016%2017)%22%3E%3Crect%20x%3D%224%22%20y%3D%2215.2%22%20width%3D%2224%22%20height%3D%223.6%22%20rx%3D%221.4%22%20fill%3D%22%23efe3cf%22%2F%3E%3Crect%20x%3D%225.5%22%20y%3D%2210.6%22%20width%3D%226%22%20height%3D%224.6%22%20rx%3D%221%22%20fill%3D%22%239cc4ec%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M16%2018.6%20L21%2026%20L11%2026%20Z%22%20fill%3D%22%238a94a6%22%2F%3E%3Cpath%20d%3D%22M24%206%20v5.6%22%20stroke%3D%22%23ff7d4d%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M21.4%2011%20L26.6%2011%20L24%2014.6%20Z%22%20fill%3D%22%23ff7d4d%22%2F%3E%3C%2Fsvg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="KP Science">
+<meta property="og:title" content="สรุปผลนักเรียน · KP Science">
+<meta property="og:description" content="ครูวางรหัสผลที่นักเรียนส่งมา แล้วดูว่าใครอยู่ระดับไหน ห้องนี้ค้างระดับใดกันมากที่สุด">
+<meta property="og:url" content="https://www.kpscience.com/drill/teacher/">
+<meta property="og:locale" content="th_TH">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/drill.css?v=1913bpz">
+</head>
+<body>
+<div class="wrap wide">
+<div class="crumb"><a href="../">ฝึกทำโจทย์</a><span aria-hidden="true">›</span><span>สรุปผลนักเรียน</span></div>
+<div class="hero"><h1>สรุปผลนักเรียน</h1>
+<p>ให้นักเรียนกดปุ่ม <b>ส่งผลให้ครู</b> ที่ท้ายหน้าเกม แล้วคัดลอกรหัสผลส่งมาในไลน์ · ครูคัดลอกทุกบรรทัดมาวางในช่องล่างนี้ทีเดียวได้เลย</p></div>
+
+<div class="pastebox">
+  <label for="paste">รหัสผลของนักเรียน (วางได้หลายคน บรรทัดละคน)</label>
+  <textarea id="paste" rows="4" spellcheck="false" placeholder="KPS1|สมชาย ม.3/1|m-ton.moment|4|100,100,100,60,0,0,0,0|486|53|20261126|1a2b"></textarea>
+  <div class="pact">
+    <button class="go" id="addbtn">เพิ่มเข้าตาราง</button>
+    <span class="sh-msg" id="pmsg"></span>
+  </div>
+</div>
+
+<div id="sum" class="sum"></div>
+
+<div class="tools">
+  <label>หัวข้อ <select id="ftopic"><option value="*">ทุกหัวข้อ</option></select></label>
+  <label>ค้นชื่อ <input id="fname" placeholder="พิมพ์ชื่อ"></label>
+  <span class="sp"></span>
+  <button id="copybtn">คัดลอกเป็นตาราง</button>
+  <button id="csvbtn">ดาวน์โหลด CSV</button>
+  <button id="clrbtn">ล้างรายชื่อทั้งหมด</button>
+</div>
+
+<div id="out"></div>
+
+<div class="howto">
+  <h2>อ่านตารางนี้อย่างไร</h2>
+  <ol>
+    <li><b>ระดับที่ทำอยู่</b> คือระดับที่ยังไม่ผ่าน เด็กที่ค้างระดับเดียวกันหลายคน แปลว่าเนื้อหาช่วงนั้นต้องสอนซ้ำ</li>
+    <li><b>ความสามารถ</b> คือผลรวมความชำนาญทุกระดับ บอกภาพรวมดีกว่าระดับเดียว เพราะเด็กที่ขึ้นระดับใหม่พอดีกับเด็กที่เกือบผ่านจะเลขต่างกันชัด</li>
+    <li>แถบเล็กท้ายแถวคือความชำนาญของทุกระดับเรียงกัน ชี้ค้างไว้จะเห็นชื่อระดับ</li>
+    <li><b>ข้อที่ทำ</b> น้อยกว่า 10 แปลว่ายังฝึกไม่พอ ตัวเลขอื่นยังเชื่อไม่ได้</li>
+    <li>ถ้าขึ้น <b>เลขตรวจไม่ตรง</b> คือรหัสถูกพิมพ์ตกหรือถูกแก้ ให้ขอรหัสใหม่</li>
+  </ol>
+  <p>รายชื่อที่วางแล้วเก็บไว้ในเบราว์เซอร์ของครูเครื่องนี้เท่านั้น ไม่ได้ส่งไปที่ไหน เปลี่ยนเครื่องหรือล้างข้อมูลเบราว์เซอร์แล้วต้องวางใหม่ ถ้าจะเก็บยาวให้กดดาวน์โหลด CSV ไว้</p>
+</div>
+<footer>
+  
+  <span class="sp"></span>
+  <a href="../" class="site">หน้ารวมฝึกทำโจทย์</a>
+  <a href="https://www.kpscience.com" class="site">KP Science</a>
+  
+  
+</footer>
+</div>
+<script>(function(){var K='kp-drill-theme';
+try{var t=localStorage.getItem(K);if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}
+var b=document.createElement('button');b.className='themebtn';b.type='button';
+function lab(){var d=document.documentElement.getAttribute('data-theme');
+b.textContent=d==='dark'?'โหมดสว่าง':d==='light'?'โหมดตามเครื่อง':'โหมดมืด';}
+b.onclick=function(){var d=document.documentElement.getAttribute('data-theme');
+var n=d==='dark'?'light':d==='light'?'':'dark';
+if(n)document.documentElement.setAttribute('data-theme',n);else document.documentElement.removeAttribute('data-theme');
+try{n?localStorage.setItem(K,n):localStorage.removeItem(K);}catch(e){}lab();};
+lab();var f=document.querySelector('footer');if(f)f.appendChild(b);})();</script>
+<script src="../assets/art.js?v=1913bpz"></script>
+<script src="../assets/rank.js?v=1913bpz"></script>
+<script>window.TOPICMETA={"m-ton.moment":{"name":"โมเมนต์ของแรง · ม.ต้น","levels":[{"n":1,"t":"แทนค่าในสูตร M = F d"},{"n":2,"t":"ย้อนสูตร หาแรงหรือระยะอาร์ม"},{"n":3,"t":"แปลงหน่วยก่อนคิด"},{"n":4,"t":"คานเบาสมดุล ΣM ทวน = ΣM ตาม"},{"n":5,"t":"เขียนแรงให้ครบ (หลายแรง · คานมีน้ำหนัก)"},{"n":6,"t":"เลือกจุดหมุน และแรงที่จุดรองรับ"},{"n":7,"t":"ตัวลวงในโจทย์ และการได้เปรียบเชิงกล"},{"n":8,"t":"กระดก จุดศูนย์ถ่วง และคานไม่ตรง"}]}}</script>
+<script src="../assets/teacher.js?v=1913bpz"></script>
+</body>
+</html>
