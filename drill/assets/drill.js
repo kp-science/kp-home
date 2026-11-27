@@ -353,6 +353,7 @@ function cardsUI(open){
 let Q=null, usedHint=0, shownHint=0, subMode=false, review=false, basic=false, gold=false;
 
 function next(opts){
+  if(gateUI()) return;
   opts=opts||{};
   if(window.KPTOOLS) KPTOOLS.newq();   /* ขึ้นข้อใหม่ ล้างกระดานทดให้ */
   subMode=false; usedHint=0; shownHint=0;
@@ -778,6 +779,56 @@ function shareUI(){
   box.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
+/* ---------- ด่านล็อกอิน ----------
+   ครูขอให้เข้าสู่ระบบก่อนทำโจทย์ เพื่อให้ผลของเด็กไปถึงครูทุกคนโดยไม่ต้องส่งรหัส
+   แต่ถ้าต่อ Firebase ไม่ได้เลย (เน็ตล่ม โรงเรียนบล็อก) ต้องปล่อยให้ทำได้
+   ไม่งั้นเด็กที่เน็ตไม่ดีจะถูกกันออกจากบทเรียนทั้งบท ซึ่งแย่กว่าการไม่มีผลส่งครู */
+let gateOn = null;            /* null = ยังไม่เคยวาด */
+function needLogin(){
+  if(!window.KPAUTH) return false;          /* ไม่มีไฟล์ล็อกอิน ก็ให้ทำได้ */
+  if(KPAUTH.failed()) return false;         /* ต่อไม่ได้จริง ๆ ปล่อยผ่าน */
+  return !KPAUTH.user();
+}
+function gateHTML(waiting){
+  if(waiting) return '<div class="gate-in"><div class="gate-wait">กำลังตรวจสอบบัญชี…</div></div>';
+  return '<div class="gate-in">'+
+    '<div class="gate-ic" aria-hidden="true">'+
+      '<svg viewBox="0 0 48 48"><path d="M14 21v-5a10 10 0 0 1 20 0v5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>'+
+      '<rect x="9" y="21" width="30" height="20" rx="4.5" fill="currentColor"/>'+
+      '<circle cx="24" cy="30" r="2.6" fill="var(--card)"/><path d="M24 32v4" stroke="var(--card)" stroke-width="2.6" stroke-linecap="round"/></svg>'+
+    '</div>'+
+    '<h2>เข้าสู่ระบบก่อนเริ่มทำโจทย์</h2>'+
+    '<p>ใช้บัญชีเดียวกับเว็บคอร์ส ไม่ต้องสมัครใหม่ ล็อกอินแล้วความคืบหน้าจะตามไปทุกเครื่อง และครูเห็นผลได้เลยโดยไม่ต้องส่งรหัส</p>'+
+    '<div class="gate-acct" id="gacct"></div>'+
+    '<p class="gate-sm">ยังไม่มีบัญชี สมัครที่เว็บคอร์สก่อน แล้วกลับมาล็อกอินที่นี่</p>'+
+  '</div>';
+}
+/* วาดหรือเก็บด่านล็อกอิน คืนค่า true ถ้าตอนนี้ยังเล่นไม่ได้ */
+function gateUI(){
+  const g=$('gate'), play=$('play');
+  if(!g || !play) return false;
+  const waiting = window.KPAUTH && !KPAUTH.ready() && !KPAUTH.failed();
+  const lock = waiting || needLogin();
+  const stateKey = lock ? (waiting?'wait':'lock') : 'open';
+  if(gateOn !== stateKey){
+    gateOn = stateKey;
+    g.hidden = !lock; play.hidden = lock;
+    const sh=$('share'), rs=$('reset');
+    if(sh) sh.hidden = lock;
+    if(rs) rs.hidden = lock;
+    if(lock){
+      g.innerHTML = gateHTML(waiting);
+      if(!waiting && window.KPAUTH){
+        KPAUTH.mount($('gacct'));
+        /* ในด่านนี้กางช่องกรอกให้เลย ไม่ต้องให้เด็กกดอีกชั้น */
+        const b=$('gacct') && $('gacct').querySelector('.acct-btn');
+        if(b) b.click();
+      }
+    } else g.innerHTML='';
+  }
+  return lock;
+}
+
 /* ---------- เริ่มเกมของหัวข้อหนึ่ง ---------- */
 function start(topic){
   LEVELS = topic.levels; T = topic.templates; FIGS = topic.figs || {};
@@ -801,6 +852,8 @@ function start(topic){
     KPAUTH.mount($('acct'));
     let lastUid=null;
     KPAUTH.onChange(async u=>{
+      const was=gateOn;
+      if(!gateUI() && was && was!=='open') next({});  /* เพิ่งล็อกอินผ่าน ก็เริ่มโจทย์ให้เลย */
       const uid=u?u.uid:null;
       if(uid===lastUid) return;
       lastUid=uid;
@@ -826,6 +879,7 @@ function start(topic){
     pi.classList.toggle('on', open);
     if(open) mo.innerHTML = moreHTML(LEVELS.find(l=>l.n===S.lv)||LEVELS[0]);
   };
+  gateUI();
   questUI(); cardsUI();
   const sh=$('share');
   if(sh) sh.onclick=()=>{ const b=$('sharebox'); if(b && !b.hidden){ b.hidden=true; } else { shareUI(); } };

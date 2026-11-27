@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="../../assets/drill.css?v=1nz51s1">
+<link rel="stylesheet" href="../../assets/drill.css?v=80gt1i">
 </head>
 <body>
 <div class="wrap">
@@ -33,6 +33,9 @@
   <div class="hd-right"><div class="acct" id="acct"></div><div class="me" id="rank"></div></div>
 </header>
 
+<div class="gate" id="gate" hidden></div>
+
+<div id="play">
 <div class="panel">
   <div class="strip">
     <span class="lvtag">ระดับ <em id="lvn">1</em></span>
@@ -56,6 +59,7 @@
 <div class="cardbox" id="cards"></div>
 
 <div class="sharebox" id="sharebox" hidden></div>
+</div>
 
 <footer>
   <span id="note"></span>
@@ -76,11 +80,11 @@ var n=d==='dark'?'light':d==='light'?'':'dark';
 if(n)document.documentElement.setAttribute('data-theme',n);else document.documentElement.removeAttribute('data-theme');
 try{n?localStorage.setItem(K,n):localStorage.removeItem(K);}catch(e){}lab();};
 lab();var f=document.querySelector('footer');if(f)f.appendChild(b);})();</script>
-<script src="../../assets/art.js?v=1nz51s1"></script>
-<script src="../../assets/rank.js?v=1nz51s1"></script>
-<script src="../../assets/auth.js?v=1nz51s1"></script>
-<script src="../../assets/drill.js?v=1nz51s1"></script>
-<script src="../../assets/tools.js?v=1nz51s1"></script>
+<script src="../../assets/art.js?v=80gt1i"></script>
+<script src="../../assets/rank.js?v=80gt1i"></script>
+<script src="../../assets/auth.js?v=80gt1i"></script>
+<script src="../../assets/drill.js?v=80gt1i"></script>
+<script src="../../assets/tools.js?v=80gt1i"></script>
 <script src="topic.js"></script>
 <script>DRILL.start(TOPIC)</script>
 </body>

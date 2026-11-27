@@ -754,3 +754,28 @@ body.has-kt{padding-bottom:104px}
 .acct-note{font-size:.71rem;color:var(--ink-soft);line-height:1.55}
 .cloudbox{margin-top:.8rem}
 .hero .acct{flex:0 0 auto;align-self:flex-start}
+
+/* ---------- ด่านล็อกอิน ----------
+   กินพื้นที่เท่าที่เคยเป็นสนามโจทย์ เพื่อไม่ให้หน้ากระตุก และให้อ่านจบในหน้าจอเดียว */
+.gate{
+  margin-top:1rem; padding:2.2rem 1.4rem 2.4rem; text-align:center;
+  background:var(--card); border:1px solid var(--line); border-radius:18px;
+  box-shadow:0 1px 0 var(--line-soft);
+}
+.gate-in{max-width:30rem; margin:0 auto}
+.gate-ic{color:var(--accent); margin-bottom:.5rem}
+.gate-ic svg{width:3.4rem; height:3.4rem; display:block; margin:0 auto}
+.gate h2{font-size:1.22rem; margin:.1rem 0 .5rem; letter-spacing:-.01em}
+.gate p{margin:0 auto .9rem; color:var(--ink-soft); font-size:.94rem; line-height:1.62; max-width:26rem}
+.gate .gate-sm{font-size:.84rem; margin-top:1rem; margin-bottom:0}
+.gate-wait{color:var(--ink-soft); padding:1.6rem 0; font-size:.95rem}
+/* กล่องล็อกอินในด่านนี้กางอยู่กับที่ ไม่ลอยทับอะไร ต่างจากปุ่มมุมหัวเรื่อง */
+.gate-acct{position:relative; display:flex; justify-content:center}
+.gate-acct .acct-btn{display:none}
+.gate-acct .acct-pop{
+  position:static; margin:0; width:100%; max-width:19rem;
+  box-shadow:none; border-color:var(--line); background:var(--sunk);
+}
+/* ในด่านนี้ข้อความอธิบายอยู่ด้านบนแล้ว ไม่ต้องพูดซ้ำในกล่อง */
+.gate-acct .acct-h,.gate-acct .acct-note{display:none}
+.gate-acct .acct-pop{padding-top:.85rem}
