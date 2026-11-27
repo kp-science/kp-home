@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/drill.css?v=1913bpz">
+<link rel="stylesheet" href="assets/drill.css?v=1g90fn5">
 </head>
 <body>
 <div class="wrap">
@@ -29,27 +29,39 @@
 <div class="rankband" id="profile"></div>
 <a class="teachlink" href="teacher/"><b>สำหรับครู · สรุปผลนักเรียน</b>
   <span>วางรหัสผลที่นักเรียนส่งมา แล้วดูว่าห้องนี้ค้างระดับไหนกันมากที่สุด</span></a>
-<div class="grade-head"><h2><a class="site" href="prathom/">ประถม</a></h2>
-  <span class="n">ป.4 – ป.6 · เปิดแล้ว 0 หัวข้อ</span></div>
-<div class="cards">
+<section class="gcard g-prathom">
+  <header class="gcard-top">
+    <div class="gc-id"><h2><a href="prathom/">ประถม</a></h2><span class="n">ป.4 – ป.6</span></div>
+    <span class="cnt">กำลังทยอยเปิด</span>
+  </header>
+  <div class="cards">
 <div class="empty">ยังไม่มีหัวข้อในระดับชั้นนี้ กำลังทยอยเพิ่ม</div>
-</div>
-<div class="grade-head"><h2><a class="site" href="m-ton/">ม.ต้น</a></h2>
-  <span class="n">ม.1 – ม.3 · เปิดแล้ว 1 หัวข้อ</span></div>
-<div class="cards">
+  </div>
+</section>
+<section class="gcard g-m-ton">
+  <header class="gcard-top">
+    <div class="gc-id"><h2><a href="m-ton/">ม.ต้น</a></h2><span class="n">ม.1 – ม.3</span></div>
+    <span class="cnt">เปิดแล้ว 1 หัวข้อ</span>
+  </header>
+  <div class="cards">
 <a class="card-link" href="m-ton/moment/" data-topic="m-ton.moment"><h3>โมเมนต์ของแรง</h3><p>คาน ลิ่ม จุดหมุน ระยะอาร์ม จนถึงคานดีดคานงัด</p>
        <span class="go">เริ่มทำ · 8 ระดับ →</span></a>
 <div class="card-link card-soon"><h3>งานและพลังงาน</h3><p>งาน กำลัง พลังงานจลน์ พลังงานศักย์</p>
        <span class="soon">กำลังทำ</span></div>
-</div>
-<div class="grade-head"><h2><a class="site" href="m-plai/">ม.ปลาย</a></h2>
-  <span class="n">ม.4 – ม.6 · เปิดแล้ว 0 หัวข้อ</span></div>
-<div class="cards">
+  </div>
+</section>
+<section class="gcard g-m-plai">
+  <header class="gcard-top">
+    <div class="gc-id"><h2><a href="m-plai/">ม.ปลาย</a></h2><span class="n">ม.4 – ม.6</span></div>
+    <span class="cnt">กำลังทยอยเปิด</span>
+  </header>
+  <div class="cards">
 <div class="card-link card-soon"><h3>สมดุลต่อการหมุน</h3><p>ต่อยอดจากโมเมนต์ ม.ต้น เพิ่มแรงคู่ควบและการแตกแรง</p>
        <span class="soon">กำลังทำ</span></div>
 <div class="card-link card-soon"><h3>แสงเชิงรังสี</h3><p>การสะท้อน การหักเห กระจกและเลนส์</p>
        <span class="soon">กำลังทำ</span></div>
-</div>
+  </div>
+</section>
 <div class="howto">
   <h2>ทำอย่างไร</h2>
   <ol>
@@ -79,8 +91,8 @@ var n=d==='dark'?'light':d==='light'?'':'dark';
 if(n)document.documentElement.setAttribute('data-theme',n);else document.documentElement.removeAttribute('data-theme');
 try{n?localStorage.setItem(K,n):localStorage.removeItem(K);}catch(e){}lab();};
 lab();var f=document.querySelector('footer');if(f)f.appendChild(b);})();</script>
-<script src="assets/art.js?v=1913bpz"></script>
-<script src="assets/rank.js?v=1913bpz"></script>
+<script src="assets/art.js?v=1g90fn5"></script>
+<script src="assets/rank.js?v=1g90fn5"></script>
 <script>(function(){
   var ha = document.getElementById('heroart');
   if (ha && window.KPART) ha.innerHTML = KPART.hero();
